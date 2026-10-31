@@ -65,6 +65,8 @@
   "yacl3.config.spatial-gui:config.lightingTintStrength.desc": "How much the lighting affects the screen brightness (0-120)",
   "yacl3.config.spatial-gui:config.recipeBookShrinkFactor": "Recipe Book Shrink Factor",
   "yacl3.config.spatial-gui:config.recipeBookShrinkFactor.desc": "Amount to shrink the screen when recipe book is open",
+  "yacl3.config.spatial-gui:config.recipeViewerScaleMultiplier": "Recipe Viewer Scale Multiplier",
+  "yacl3.config.spatial-gui:config.recipeViewerScaleMultiplier.desc": "Third person scale multiplier when a recipe viewer is detected, applies to all screens. \n\nThis config only appears when a recipe viewer is installed.",
   "yacl3.config.spatial-gui:config.category.appearance.group.firstPersonHands": "First Person Hands",
   "yacl3.config.spatial-gui:config.category.thirdPerson.group.screen": "Screen",
   "yacl3.config.spatial-gui:config.category.thirdPerson.group.camera": "Camera",

@@ -1,6 +1,7 @@
 package org.tastytrash.spatialGUI.util;
 
 import org.joml.*;
+import org.tastytrash.spatialGUI.compat.RecipeViewerCompat;
 import org.tastytrash.spatialGUI.config.ConfigManager;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -143,13 +144,17 @@ public final class RenderUtil {
             yawOffset = -yawOffset;
         }
 
+        float recipeViewerMultiplier = RecipeViewerCompat.isRecipeViewerLoaded()
+                ? (float) ConfigManager.config().recipeViewerScaleMultiplier
+                : 1.0f;
+
         return new ScreenTransformConfig(
                 (float) ConfigManager.config().screenDistance,
                 sideOffset,
                 heightOffset,
                 yawOffset,
                 (float) ConfigManager.config().screenPitchOffset,
-                (float) ConfigManager.config().screenScale * thirdPersonFovMultiplier
+                (float) ConfigManager.config().screenScale * thirdPersonFovMultiplier * recipeViewerMultiplier
         );
     }
 

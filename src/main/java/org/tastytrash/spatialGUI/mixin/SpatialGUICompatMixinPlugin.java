@@ -35,7 +35,8 @@ public class SpatialGUICompatMixinPlugin implements IMixinConfigPlugin {
             "compat.CreateStockKeeperMixin", "create",
             "compat.StorageDrawersMixin", "storagedrawers",
             "compat.ShoulderSurfingCrosshairMixin", "shouldersurfing",
-            "compat.WatutMixin", "watut"
+            "compat.WatutMixin", "watut",
+            "compat.LeawindsTPCrosshairMixin", "leawind_third_person"
     );
 
     @Override

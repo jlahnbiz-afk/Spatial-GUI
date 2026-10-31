@@ -2,6 +2,7 @@ package org.tastytrash.spatialGUI.config;
 
 import dev.isxander.yacl3.api.*;
 import dev.isxander.yacl3.api.controller.ControllerBuilder;
+import dev.isxander.yacl3.api.controller.DoubleSliderControllerBuilder;
 import dev.isxander.yacl3.api.controller.StringControllerBuilder;
 import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
 import dev.isxander.yacl3.config.v2.api.ConfigField;
@@ -12,6 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
+import org.tastytrash.spatialGUI.compat.RecipeViewerCompat;
 //? if fabric {
 import net.fabricmc.loader.api.FabricLoader;
 //?} else if neoforge {
@@ -296,6 +298,9 @@ public class SpatialGUIConfig {
     @AutoGen(category = "thirdPerson", group = "screen")
     @DoubleSlider(min = 0.5, max = 10.0, step = 0.05)
     public double screenScale = 3.5;
+
+    @SerialEntry
+    public double recipeViewerScaleMultiplier = 0.65;
 
     @SerialEntry
     @AutoGen(category = "thirdPerson", group = "screen")
@@ -671,6 +676,15 @@ public class SpatialGUIConfig {
             }
         }
         builder.option(openEditor);
+
+        if (RecipeViewerCompat.isRecipeViewerLoaded()) {
+            builder.option(Option.<Double>createBuilder()
+                    .name(Component.translatable("yacl3.config.spatial-gui:config.recipeViewerScaleMultiplier"))
+                    .description(OptionDescription.of(Component.translatable("yacl3.config.spatial-gui:config.recipeViewerScaleMultiplier.desc")))
+                    .binding(0.65, () -> HANDLER.instance().recipeViewerScaleMultiplier, v -> HANDLER.instance().recipeViewerScaleMultiplier = v)
+                    .controller(o -> DoubleSliderControllerBuilder.create(o).range(0.1, 1.0).step(0.05))
+                    .build());
+        }
 
         categories.set(0, builder.build());
         return YetAnotherConfigLib.createBuilder()
