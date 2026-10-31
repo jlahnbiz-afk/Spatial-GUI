@@ -6,6 +6,7 @@ import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.*;
 import net.minecraft.world.phys.Vec3;
+import org.tastytrash.spatialGUI.api.SpatialGUIAPI;
 import org.tastytrash.spatialGUI.compat.VisorCompat;
 import org.tastytrash.spatialGUI.config.ConfigManager;
 import org.tastytrash.spatialGUI.editor.EditorMode;import org.tastytrash.spatialGUI.editor.EditorScreen;
@@ -116,19 +117,16 @@ public class SpatialGUIClient {
     }
 
     public static boolean shouldHideHud() {
-        return isEnabled() && ConfigManager.config().hideHud
-                && renderer() != null && renderer().getHookedScreen() != null;
+        return SpatialGUIAPI.isActive() && ConfigManager.config().hideHud;
     }
 
     public static boolean shouldHideHotbar() {
-        return isEnabled() && ConfigManager.config().hideHotbar
-                && renderer() != null && renderer().getHookedScreen() != null;
+        return SpatialGUIAPI.isActive() && ConfigManager.config().hideHotbar;
     }
 
     public static boolean shouldHideCrosshair() {
-        return isEnabled() && getEffectiveFirstPersonMode()
-                && (!ConfigManager.config().useCrosshairForFirstPerson || EditorMode.mouseFree())
-                && renderer() != null && renderer().getHookedScreen() != null;
+        return SpatialGUIAPI.isFirstPersonMode()
+                && (!ConfigManager.config().useCrosshairForFirstPerson || EditorMode.mouseFree());
     }
 
     public static boolean shouldHookScreen(Screen screen) {

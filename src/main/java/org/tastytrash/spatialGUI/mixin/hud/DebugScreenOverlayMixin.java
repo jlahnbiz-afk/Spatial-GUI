@@ -5,6 +5,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.tastytrash.spatialGUI.SpatialGUI;
+import org.tastytrash.spatialGUI.api.SpatialGUIAPI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.config.ConfigManager;
 
@@ -14,9 +15,7 @@ import org.tastytrash.spatialGUI.config.ConfigManager;
 public class DebugScreenOverlayMixin {
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     private void spatialGUI$hideDebugOverlay(CallbackInfo ci) {
-        if (SpatialGUIClient.isEnabled() && ConfigManager.config().hideHud
-                && SpatialGUIClient.renderer() != null
-                && SpatialGUIClient.renderer().getHookedScreen() != null) {
+        if (SpatialGUIAPI.isActive() && ConfigManager.config().hideHud) {
             ci.cancel();
         }
     }

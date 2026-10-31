@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.tastytrash.spatialGUI.api.SpatialGUIAPI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.compat.ControlifyCompat;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
@@ -23,9 +24,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 public class ControlifyMixin {
     @Unique
     private static boolean spatialGUI$active() {
-        if (!SpatialGUIClient.isEnabled()) return false;
-        var renderer = SpatialGUIClient.renderer();
-        return renderer != null && SpatialGUIClient.shouldHookScreen(renderer.getHookedScreen());
+        return SpatialGUIClient.isEnabled() && SpatialGUIClient.shouldHookScreen(SpatialGUIAPI.getCurrentScreen());
     }
 
     @ModifyVariable(method = "renderVirtualMouse", at = @At("STORE"), ordinal = 0, require = 0, remap = false)

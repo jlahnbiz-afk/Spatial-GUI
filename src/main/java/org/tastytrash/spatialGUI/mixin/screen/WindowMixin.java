@@ -8,6 +8,7 @@ import net.minecraft.client.gui.screens.Screen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.tastytrash.spatialGUI.api.SpatialGUIAPI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.compat.EssentialCompat;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
@@ -62,7 +63,6 @@ public class WindowMixin {
         Screen screen = mc.screen;
         //?}
         if (SpatialGUIClient.shouldHookScreen(screen)) return true;
-        var renderer = org.tastytrash.spatialGUI.client.SpatialGUIClient.renderer();
-        return renderer != null && SpatialGUIClient.shouldHookScreen(renderer.getHookedScreen());
+        return SpatialGUIClient.shouldHookScreen(SpatialGUIAPI.getCurrentScreen());
     }
 }

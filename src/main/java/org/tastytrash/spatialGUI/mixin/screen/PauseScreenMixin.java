@@ -6,6 +6,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.tastytrash.spatialGUI.api.SpatialGUIAPI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 
@@ -30,9 +31,6 @@ public class PauseScreenMixin {
 
     @Unique
     private boolean spatialGUI$isHooked() {
-        var renderer = SpatialGUIClient.renderer();
-        return SpatialGUIRenderer.isExtractingScreen
-                && renderer != null
-                && renderer.getHookedScreen() == (Object) this;
+        return SpatialGUIRenderer.isExtractingScreen && SpatialGUIAPI.getCurrentScreen() == (Object) this;
     }
 }

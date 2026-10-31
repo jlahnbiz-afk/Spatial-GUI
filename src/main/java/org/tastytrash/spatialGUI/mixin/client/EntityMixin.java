@@ -7,6 +7,7 @@ import net.minecraft.world.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.tastytrash.spatialGUI.SpatialGUI;
+import org.tastytrash.spatialGUI.api.SpatialGUIAPI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.config.ConfigManager;
 
@@ -19,12 +20,7 @@ public abstract class EntityMixin {
             return original;
         }
 
-        var renderer = SpatialGUIClient.renderer();
-        if (renderer == null
-                || !SpatialGUIClient.isEnabled()
-                || !SpatialGUIClient.getEffectiveFirstPersonMode()
-                || renderer.getHookedScreen() == null
-                || ConfigManager.config().hideHandsInFirstPerson) {
+        if (!SpatialGUIAPI.isFirstPersonMode() || ConfigManager.config().hideHandsInFirstPerson) {
             return original;
         }
 

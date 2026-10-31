@@ -70,17 +70,18 @@ However, compatibility isn't guaranteed with every mod. Spatial GUI modifies GUI
 
 If you find a reproducible incompatibility with another mod, please report it on GitHub so it can be investigated. Reporting an issue helps make the mod better for everyone!
 
-[Punchy](https://modrinth.com/mod/punchy-fpa) has built-in compatibility with Spatial GUI in first-person mode! This can be toggled in Punchy's config. 
+**Warning: Lunar Client is not supported.** Lunar Client modifies Minecraft's rendering in ways that are incompatible with Spatial GUI. While it's not completely incompatible and still functions in most cases, issues caused by using Lunar Client will not be addressed.
 
 # FAQ
-| Question                                        | Answer                                                                                                                                                                                                           |
-|-------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Does Spatial GUI work in multiplayer?**       | Yes. Other players and the server do not need to have Spatial GUI installed.                                                                                                                                     |
-| **Does Spatial GUI give a gameplay advantage?** | Spatial GUI is primarily visual and does not add or automate gameplay mechanics. Some settings can change how the camera behaves, so whether it is allowed on a particular server is up to that server's rules.  |
-| **Is Spatial GUI compatible with _____?**       | Probably! However, compatibility isn't guaranteed, especially with mods that modify GUIs, cameras, or rendering. If you encounter an issue with a specific mod, feel free to report it on GitHub.                |
-| **Why is my GUI behaving strangely?**           | Another installed mod may be incompatible. Try to identify the mod involved, then check existing GitHub issues or open a new issue with steps to reproduce the problem.                                          |
-| **Can I use Spatial GUI in a modpack?**         | Yes. Spatial GUI is welcome in modpacks and no additional permission is required. Compatibility with other mods is not guaranteed.                                                                               |
-| **Is Spatial GUI purely visual?**               | Almost entirely. Spatial GUI changes how existing screens and the camera are presented. One setting intentionally allows your rotation to persist after closing a GUI, which can turn your character's view.     |
+| Question                                        | Answer                                                                                                                                                                                                          |
+|-------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Does Spatial GUI work in multiplayer?**       | Yes. Other players and the server do not need to have Spatial GUI installed.                                                                                                                                    |
+| **Does Spatial GUI give a gameplay advantage?** | Spatial GUI is primarily visual and does not add or automate gameplay mechanics. Some settings can change how the camera behaves, so whether it is allowed on a particular server is up to that server's rules. |
+| **Is Spatial GUI compatible with _____?**       | Probably! However, compatibility isn't guaranteed, especially with mods that modify GUIs, cameras, or rendering. If you encounter an issue with a specific mod, feel free to report it on GitHub.               |
+| **Why is my GUI behaving strangely?**           | Another installed mod may be incompatible. Try to identify the mod involved, then check existing GitHub issues or open a new issue with steps to reproduce the problem.                                         |
+| **Why is my GUI blurry?**                       | This is usually caused by another mod or a client. Try and figure out which mod is causing this, or look in your client settings for terms like 'blur' and 'background'.                                        |
+| **Can I use Spatial GUI in a modpack?**         | Yes. Spatial GUI is welcome in modpacks and no additional permission is required. Compatibility with other mods is not guaranteed.                                                                              |
+| **Is Spatial GUI purely visual?**               | Almost entirely. Spatial GUI changes how existing screens and the camera are presented. One setting intentionally allows your rotation to persist after closing a GUI, which can turn your character's view.    |
 
 ## Notes
 *   Feel free to suggest features or report bugs on the GitHub.

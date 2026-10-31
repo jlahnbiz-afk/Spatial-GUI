@@ -29,12 +29,13 @@ public class SpatialGUICompatMixinPlugin implements IMixinConfigPlugin {
     private static final Map<String, String> OPTIONAL_MIXINS = Map.of(
             "compat.ControlifyMixin", "controlify",
             "compat.ControlifyNeoForgeMixin", "controlify",
-            "compat.DynamicCrosshairMixin", "dynamiccrosshair",
             "compat.OwoBlurMixin", "owo",
             "compat.PolytoneMixin", "polytone",
             "compat.SophisticatedCoreMixin", "sophisticatedcore",
             "compat.CreateStockKeeperMixin", "create",
-            "compat.StorageDrawersMixin", "storagedrawers"
+            "compat.StorageDrawersMixin", "storagedrawers",
+            "compat.ShoulderSurfingCrosshairMixin", "shouldersurfing",
+            "compat.WatutMixin", "watut"
     );
 
     @Override

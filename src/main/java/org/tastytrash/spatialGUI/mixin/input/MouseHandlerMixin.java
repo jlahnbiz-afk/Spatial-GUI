@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.tastytrash.spatialGUI.api.SpatialGUIAPI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.compat.ControlifyCompat;
 import org.tastytrash.spatialGUI.compat.InvMoveCompat;
@@ -46,8 +47,7 @@ public class MouseHandlerMixin {
         //?}
         if (MouseHandlerUtil.usesRawMouse(screen)) return false;
         if (SpatialGUIClient.shouldHookScreen(screen)) return true;
-        var renderer = SpatialGUIClient.renderer();
-        return renderer != null && SpatialGUIClient.shouldHookScreen(renderer.getHookedScreen());
+        return SpatialGUIClient.shouldHookScreen(SpatialGUIAPI.getCurrentScreen());
     }
 
     //? if >1.21.1 {

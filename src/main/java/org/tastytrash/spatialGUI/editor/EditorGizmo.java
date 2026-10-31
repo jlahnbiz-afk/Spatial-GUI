@@ -5,6 +5,7 @@ import net.minecraft.util.Mth;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.tastytrash.spatialGUI.api.SpatialGUIAPI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.config.ConfigManager;
 import org.tastytrash.spatialGUI.config.SpatialGUIConfig;
@@ -36,8 +37,7 @@ public final class EditorGizmo {
     private static final Vector2f grab = new Vector2f();
 
     public static boolean active() {
-        var renderer = SpatialGUIClient.renderer();
-        return renderer != null && renderer.getHookedScreen() instanceof EditorScreen;
+        return SpatialGUIAPI.getCurrentScreen() instanceof EditorScreen;
     }
 
     public static void setPressed(boolean value) {
