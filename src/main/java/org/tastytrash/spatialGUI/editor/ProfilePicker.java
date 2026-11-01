@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.config.ConfigManager;
 import org.tastytrash.spatialGUI.util.EditorUtil;
 import org.tastytrash.spatialGUI.util.GuiScaleUtil;
@@ -28,6 +29,13 @@ public final class ProfilePicker {
 
     public static void close() {
         screen = null;
+    }
+
+    public static boolean handleTextFieldKey(int key, boolean pickerKey) {
+        var renderer = SpatialGUIClient.renderer();
+        if (renderer == null || !SpatialGUIClient.isEnabled() || renderer.getHookedScreen() == null) return false;
+        Screen hooked = renderer.getHookedScreen();
+        return isOpen() ? keyPressed(hooked, key, pickerKey) : pickerKey && open(hooked);
     }
 
     private static int currentIndex() {

@@ -5,15 +5,16 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 
 import java.util.function.DoubleConsumer;
+import java.util.function.Supplier;
 
 public final class EditorSliderButton extends AbstractSliderButton {
-    private final String label;
+    private final Supplier<Component> label;
     private final double min;
     private final double max;
     private final DoubleConsumer onChange;
     private boolean dragging;
 
-    public EditorSliderButton(int width, int height, String label, double min, double max, DoubleConsumer onChange) {
+    public EditorSliderButton(int width, int height, Supplier<Component> label, double min, double max, DoubleConsumer onChange) {
         super(0, 0, width, height, Component.empty(), 0);
         this.label = label;
         this.min = min;
@@ -48,7 +49,7 @@ public final class EditorSliderButton extends AbstractSliderButton {
 
     @Override
     protected void updateMessage() {
-        setMessage(Component.literal(label + ": " + String.format("%.2f", min + value * (max - min))));
+        setMessage(Component.literal(label.get().getString() + ": " + String.format("%.2f", min + value * (max - min))));
     }
 
     @Override

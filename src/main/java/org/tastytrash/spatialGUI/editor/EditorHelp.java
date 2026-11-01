@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import org.tastytrash.spatialGUI.SpatialGUI;
+import org.tastytrash.spatialGUI.client.SpatialGUIKeybinds;
 import org.tastytrash.spatialGUI.config.SpatialGUIConfig;
 import org.tastytrash.spatialGUI.util.EditorUtil;
 
@@ -15,22 +16,41 @@ final class EditorHelp {
     private static final int BUTTON_WIDTH = 100;
     private static final int BUTTON_GAP = 4;
 
-    private static final int INTRO_LINES = 10;
-    private static final int HELP_LINES = 14;
+    private enum Page {
+        INTRO("spatial-gui.editor.help.intro.", 10, "spatial-gui.editor.help.show_intro"),
+        INSTRUCTIONS("spatial-gui.editor.help.", 14, "spatial-gui.editor.help.show_instructions"),
+        PROFILES("spatial-gui.editor.help.profile.", 5, "spatial-gui.editor.help.show_profiles");
+
+        final String prefix;
+        final int lines;
+        final String label;
+
+        Page(String prefix, int lines, String label) {
+            this.prefix = prefix;
+            this.lines = lines;
+            this.label = label;
+        }
+
+        Page next() {
+            return values()[(ordinal() + 1) % values().length];
+        }
+    }
 
     private static final Button helpButton = EditorUtil.button(EditorUtil.BUTTON_HEIGHT);
     private static final Button closeButton = EditorUtil.button(BUTTON_WIDTH);
     private static final Button switchButton = EditorUtil.button(BUTTON_WIDTH);
 
     private static boolean open;
-    private static boolean intro;
+    private static boolean profileExitPrompt;
+    private static Page page = Page.INSTRUCTIONS;
 
     private EditorHelp() {}
 
     static void begin() {
-        intro = !SpatialGUI.config.editorIntroSeen;
-        open = intro;
-        if (intro) {
+        profileExitPrompt = false;
+        open = !SpatialGUI.config.editorIntroSeen;
+        page = open ? Page.INTRO : Page.INSTRUCTIONS;
+        if (open) {
             SpatialGUI.config.editorIntroSeen = true;
             SpatialGUIConfig.HANDLER.save();
         }
@@ -40,22 +60,42 @@ final class EditorHelp {
         return open;
     }
 
+    static boolean shouldShowProfileTip() {
+        return !SpatialGUI.config.profilePickerTipSeen && EditorProfiles.count() > 1;
+    }
+
+    static void showProfileTip() {
+        EditorDropdown.close();
+        profileExitPrompt = true;
+        page = Page.PROFILES;
+        open = true;
+    }
+
+    private static void dismiss() {
+        open = false;
+        if (!profileExitPrompt) return;
+        profileExitPrompt = false;
+        SpatialGUI.config.profilePickerTipSeen = true;
+        SpatialGUIConfig.HANDLER.save();
+        EditorScreen.closeEditor();
+    }
+
     static boolean clickHelpButton(double cursorX, double cursorY, int mouseButton) {
         if (open || mouseButton != InputConstants.MOUSE_BUTTON_LEFT || !helpButton.isMouseOver(cursorX, cursorY)) return false;
         EditorDropdown.close();
-        intro = false;
+        page = Page.INSTRUCTIONS;
         open = true;
         return true;
     }
 
     static void click(double cursorX, double cursorY) {
-        if (closeButton.isMouseOver(cursorX, cursorY)) open = false;
-        else if (switchButton.isMouseOver(cursorX, cursorY)) intro = !intro;
+        if (closeButton.isMouseOver(cursorX, cursorY)) dismiss();
+        else if (!profileExitPrompt && switchButton.isMouseOver(cursorX, cursorY)) page = page.next();
     }
 
     static boolean keyPressed(int key) {
         if (key == InputConstants.KEY_ESCAPE || key == InputConstants.KEY_RETURN || key == InputConstants.KEY_NUMPADENTER) {
-            open = false;
+            dismiss();
         }
         return true;
     }
@@ -69,8 +109,10 @@ final class EditorHelp {
 
         if (!EditorMode.mouseFree()) EditorMode.toggleMouseFree();
 
-        String prefix = intro ? "spatial-gui.editor.help.intro." : "spatial-gui.editor.help.";
-        int lines = intro ? INTRO_LINES : HELP_LINES;
+        Component pickerKey = SpatialGUIKeybinds.profilePickerKey();
+        String keyName = pickerKey != null ? pickerKey.getString() : "";
+        String prefix = page == Page.PROFILES && pickerKey == null ? "spatial-gui.editor.help.profile.unbound." : page.prefix;
+        int lines = page.lines;
 
         int height = PADDING + TITLE_HEIGHT + lines * LINE_HEIGHT + PADDING + EditorUtil.BUTTON_HEIGHT + PADDING;
         int x = (guiWidth - PANEL_WIDTH) / 2;
@@ -81,21 +123,30 @@ final class EditorHelp {
         EditorUtil.fillRect(g, x, y, x + PANEL_WIDTH, y + height, 0xFF101010);
 
         int textY = y + PADDING;
-        EditorUtil.drawTranslatedText(g, prefix + "title", x + PADDING, textY);
+        drawLine(g, prefix + "title", keyName, x + PADDING, textY);
         textY += TITLE_HEIGHT;
         for (int i = 1; i <= lines; i++) {
-            EditorUtil.drawTranslatedText(g, prefix + i, x + PADDING, textY);
+            drawLine(g, prefix + i, keyName, x + PADDING, textY);
             textY += LINE_HEIGHT;
         }
         textY += PADDING;
 
         boolean usable = EditorMode.cursorFree();
-        int buttonsX = x + (PANEL_WIDTH - 2 * BUTTON_WIDTH - BUTTON_GAP) / 2;
-        Component switchLabel = Component.translatable(intro ? "spatial-gui.editor.help.show_instructions" : "spatial-gui.editor.help.show_intro");
-        Component closeLabel = Component.translatable(intro ? "spatial-gui.editor.help.got_it" : "spatial-gui.editor.help.close");
-        EditorUtil.drawButton(switchButton, switchLabel, buttonsX, textY, usable, g);
-        EditorUtil.drawButton(closeButton, closeLabel, buttonsX + BUTTON_WIDTH + BUTTON_GAP, textY, usable, g);
+        if (profileExitPrompt) {
+            Component doneLabel = Component.translatable("spatial-gui.editor.button.save_quit");
+            EditorUtil.drawButton(closeButton, doneLabel, x + (PANEL_WIDTH - BUTTON_WIDTH) / 2, textY, usable, g);
+        } else {
+            int buttonsX = x + (PANEL_WIDTH - 2 * BUTTON_WIDTH - BUTTON_GAP) / 2;
+            Component switchLabel = Component.translatable(page.next().label);
+            Component closeLabel = Component.translatable(page == Page.INTRO ? "spatial-gui.editor.help.got_it" : "spatial-gui.editor.help.close");
+            EditorUtil.drawButton(switchButton, switchLabel, buttonsX, textY, usable, g);
+            EditorUtil.drawButton(closeButton, closeLabel, buttonsX + BUTTON_WIDTH + BUTTON_GAP, textY, usable, g);
+        }
 
         EditorUtil.popLayer(g);
+    }
+
+    private static void drawLine(Object g, String key, String keyName, int x, int y) {
+        EditorUtil.drawText(g, Component.translatable(key, keyName).getString(), x, y);
     }
 }

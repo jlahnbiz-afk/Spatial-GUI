@@ -38,6 +38,7 @@
     "render.LevelRendererMixin",
     "render.RenderTargetMixin",
     "screen.AbstractRecipeBookScreenMixin",
+    "screen.EditBoxMixin",
     "screen.PauseScreenMixin",
     "screen.ScreenLayoutMixin",
     "screen.ScreenMixin",

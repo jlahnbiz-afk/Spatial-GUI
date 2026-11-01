@@ -130,6 +130,24 @@ public class EditorScreen extends Screen {
     }
 
     @Override
+    public void onClose() {
+        if (EditorHelp.shouldShowProfileTip()) {
+            EditorHelp.showProfileTip();
+            return;
+        }
+        super.onClose();
+    }
+
+    static void closeEditor() {
+        var client = Minecraft.getInstance();
+        //? if <26.2 {
+        if (client.screen instanceof EditorScreen screen) screen.onClose();
+        //?} else {
+        /*if (client.gui.screen() instanceof EditorScreen screen) screen.onClose();
+        *///?}
+    }
+
+    @Override
     public void removed() {
         for (EditorSliderButton slider : sliderWidgets) {
             if (!slider.dragging()) continue;

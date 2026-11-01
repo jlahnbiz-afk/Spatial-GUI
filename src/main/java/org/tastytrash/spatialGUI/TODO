@@ -2,10 +2,6 @@ __________ FIXES _________________
 ================================
 -------- HIGH PRIORITY ---------------
 
-Can't open picker in anvil
-
-Screen flash on opening editor from YACL
-
 Compat:
  - Real Camera (#25) (May not be possible)
  - Item Zoomer (Forge 1.20.1 w/ JEI)
@@ -14,6 +10,8 @@ Compat:
 -------- MID PRIORITY ---------------
 
 Change third person default config
+
+Config option to enable texture world depth
 
 Hand bob gets reset when leaving the GUI
 
@@ -37,11 +35,7 @@ Rework drop shadow softness/layers, maybe replace with soft edges?
 /////////////////////////////////////
 Visual editor
 High priority:
- - Curved screen degrees slider
-   - Don't render curve buttons in third person
- - Rotation gizmo, or just sliders
  - Camera controls for third person
- - Tip to bind profile picker after creating a new profile
  - More obvious tip to press tab when mouse is grabbed
 
 Possible later ideas:

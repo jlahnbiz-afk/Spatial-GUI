@@ -148,9 +148,6 @@ public class SpatialGUIConfig {
     public List<String> seenScreens = new ArrayList<>();
 
     @SerialEntry
-    public boolean editorIntroSeen = false;
-
-    @SerialEntry
     @AutoGen(category = "screens")
     @TickBox
     public boolean disableFirstPerson = false;
@@ -584,8 +581,12 @@ public class SpatialGUIConfig {
     @DoubleSlider(min = 0.1, max = 2.0, step = 0.01)
     public double autoScaleThirdPersonScreenMultiplier = 0.82;
 
+    // non-config variables
+    @SerialEntry
+    public boolean editorIntroSeen = false;
 
-
+    @SerialEntry
+    public boolean profilePickerTipSeen = false;
 
 
     public int getEffectiveGuiScale() {
@@ -655,9 +656,7 @@ public class SpatialGUIConfig {
                 .available(Minecraft.getInstance().level != null)
                 .action((screen, option) -> {
                     screen.finishOrSave();
-                    Minecraft client = Minecraft.getInstance();
-                    client.setScreen(null);
-                    client.execute(() -> EditorMode.toggle(client));
+                    EditorMode.toggle(Minecraft.getInstance());
                 })
                 .build();
 

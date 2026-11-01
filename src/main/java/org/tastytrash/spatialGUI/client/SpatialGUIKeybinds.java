@@ -93,6 +93,11 @@ public class SpatialGUIKeybinds {
     }
     *///?}
 
+    public static Component profilePickerKey() {
+        if (openProfilePicker == null || openProfilePicker.isUnbound()) return null;
+        return openProfilePicker.getTranslatedKeyMessage();
+    }
+
     public static boolean pressToggleMouseFree() {
         if (!SpatialGUIRenderer.isCrosshairModeActive()) return false;
         if (!toggleMouseFreeHeld) {

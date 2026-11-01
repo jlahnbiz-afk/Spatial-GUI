@@ -1,10 +1,12 @@
-* Add elytra flying offset in the config
-* Fix Item Swapper compatibility issue
-* Fix issue on NeoForge causing some mods' overlays not to render
-* Fix Storage Drawers rendering issue
-* Fix JEI tooltip rendering in 1.20.1 Fabric
-* Fix crosshair hiding with 'Hide HUD' enabled
-* Fix Traveler's Backpack & certain Create Fly GUI's rendering too large
-* Smaller general fixes 
+* Huge editor update
+  * You can now create profiles in the editor
+  * Apply profiles globally or per-screen using the profile picker
+    * Profile picker bound to backtick/tilde (`/~) by default
+  * Added buttons for GUI scale override and curved screen
+  * Added sliders for screen rotation and curved arc
+* Added config option to shrink screen size with recipe viewer mods
+* Added compat to hide third-person crosshair with Shoulder Surfing Reloaded and Leawind's Third Person
+* Added compat to prevent Watut from rendering your screen (client-side) while Spatial GUI is open
+* Some bug fixes
 
-Thank you so much to everyone who reported issues on the GitHub! Your reports help make Spatial GUI better with every release.
+Please feel free to suggest features on the GitHub, especially ones related to the editor
