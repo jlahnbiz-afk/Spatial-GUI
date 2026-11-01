@@ -43,6 +43,9 @@ public final class EditorUtil {
         //?} else {
         /*widget.render((GuiGraphicsExtractor) g, cursorX, cursorY, 0f);
          *///?}
+        //? if <=1.21.1 {
+        /*((GuiGraphicsExtractor) g).flush();
+         *///?}
     }
 
     public static void pushScale(Object g, float scale) {
@@ -72,7 +75,7 @@ public final class EditorUtil {
         //?} else if >1.21.11 {
         /*((net.minecraft.client.gui.GuiGraphicsExtractor) g).drawString(font, text, x, y, 0xFFFFFFFF, true);
          *///?} else {
-        /*((net.minecraft.client.gui.GuiGraphics) g).drawString(font, text, x, y, 0xFFFFFFFF);
+        /*((net.minecraft.client.gui.GuiGraphicsExtractor) g).drawString(font, text, x, y, 0xFFFFFFFF);
          *///?}
     }
 
@@ -82,5 +85,19 @@ public final class EditorUtil {
 
     public static void fillRect(Object g, int x1, int y1, int x2, int y2, int color) {
         ((net.minecraft.client.gui.GuiGraphicsExtractor) g).fill(x1, y1, x2, y2, color);
+    }
+
+    public static void pushLayer(Object g) {
+        //? if <=1.21.1 {
+        /*var pose = ((GuiGraphicsExtractor) g).pose();
+        pose.pushPose();
+        pose.translate(0f, 0f, 200f);
+        *///?}
+    }
+
+    public static void popLayer(Object g) {
+        //? if <=1.21.1 {
+        /*((GuiGraphicsExtractor) g).pose().popPose();
+         *///?}
     }
 }

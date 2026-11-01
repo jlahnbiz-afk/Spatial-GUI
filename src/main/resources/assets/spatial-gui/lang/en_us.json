@@ -260,6 +260,9 @@
   "spatial-gui.editor.value.on": "On",
   "spatial-gui.editor.value.off": "Off",
   "spatial-gui.editor.value.default": "Default",
+  "spatial-gui.editor.slider.arc": "Arc",
+  "spatial-gui.editor.slider.yaw": "Yaw",
+  "spatial-gui.editor.slider.pitch": "Pitch",
 
   "spatial-gui.editor.help.intro.title": "§6§lVisual Editor",
   "spatial-gui.editor.help.intro.1": "§8|§f An advanced tool for editing your config in the world,",

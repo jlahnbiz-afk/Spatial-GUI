@@ -37,10 +37,8 @@ public class GuiMixin {
     /*private void spatialGUI$endExtract(DeltaTracker deltaTracker, boolean shouldRenderLevel, boolean resourcesLoaded, CallbackInfo ci, @Local(name = "graphics") GuiGraphicsExtractor graphics) {
     *///?}
         SpatialGUIRenderer.skipWindowOverride = false;
-        //? if !forge {
         EditorScreen.drawOverlay(graphics);
         ProfilePicker.drawOverlay(graphics);
-        //?}
     }
 
     // swap the graphics so wrappers of this call (e.g. Architectury events REI uses)

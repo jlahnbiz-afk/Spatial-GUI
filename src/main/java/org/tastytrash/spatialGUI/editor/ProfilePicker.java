@@ -103,6 +103,5 @@ public final class ProfilePicker {
         EditorUtil.drawTranslatedText(g, "spatial-gui.profile_picker.bottom", x, y + (count + 1) * EditorUtil.BUTTON_HEIGHT + 6);
 
         EditorUtil.popScale(g);
-
     }
 }

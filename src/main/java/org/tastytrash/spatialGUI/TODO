@@ -2,12 +2,11 @@ __________ FIXES _________________
 ================================
 -------- HIGH PRIORITY ---------------
 
-Profile picker not rendering (Forge 1.20.1, )
-
 Can't open picker in anvil
 
+Screen flash on opening editor from YACL
+
 Compat:
- - Leawind's Third Person (#169) (Needs info)
  - Real Camera (#25) (May not be possible)
  - Item Zoomer (Forge 1.20.1 w/ JEI)
  - Legacy4J (#164)
@@ -38,7 +37,6 @@ Rework drop shadow softness/layers, maybe replace with soft edges?
 /////////////////////////////////////
 Visual editor
 High priority:
- - Tooltips on editor buttons
  - Curved screen degrees slider
    - Don't render curve buttons in third person
  - Rotation gizmo, or just sliders
@@ -50,6 +48,7 @@ Possible later ideas:
  - Apply profile to category
  - Animation/transition preview
  - Snap to grid?
+ - Tooltips on editor buttons
 ////////////////////////////////////////
 
 
@@ -59,6 +58,6 @@ Parallax magnitude config
 
 Special transition case for third person front
 
-Block anchored screens
+Block-anchored screens
 
 Sounds

@@ -23,6 +23,8 @@ public final class ConfigProfiles {
             "firstPersonScreenSideOffset", "screenSideOffset",
             "firstPersonScreenHeightOffset", "screenHeightOffset",
             "firstPersonScreenDistance", "screenDistance",
+            "firstPersonScreenYawOffset", "screenYawOffset",
+            "firstPersonScreenPitchOffset", "screenPitchOffset",
             "curvedScreenEnabled", "curvedScreenArcDegrees");
 
     private static final Gson GSON = new Gson();

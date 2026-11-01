@@ -65,6 +65,8 @@ final class EditorHelp {
         EditorUtil.drawButton(helpButton, Component.literal("?"), helpX, EditorUtil.SCREEN_MARGIN, EditorMode.cursorFree(), g);
         if (!open) return;
 
+        EditorUtil.pushLayer(g);
+
         if (!EditorMode.mouseFree()) EditorMode.toggleMouseFree();
 
         String prefix = intro ? "spatial-gui.editor.help.intro." : "spatial-gui.editor.help.";
@@ -93,5 +95,7 @@ final class EditorHelp {
         Component closeLabel = Component.translatable(intro ? "spatial-gui.editor.help.got_it" : "spatial-gui.editor.help.close");
         EditorUtil.drawButton(switchButton, switchLabel, buttonsX, textY, usable, g);
         EditorUtil.drawButton(closeButton, closeLabel, buttonsX + BUTTON_WIDTH + BUTTON_GAP, textY, usable, g);
+
+        EditorUtil.popLayer(g);
     }
 }

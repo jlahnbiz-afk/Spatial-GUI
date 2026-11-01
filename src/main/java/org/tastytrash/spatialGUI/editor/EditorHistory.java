@@ -3,25 +3,38 @@ package org.tastytrash.spatialGUI.editor;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import org.tastytrash.spatialGUI.config.ConfigManager;
+import org.tastytrash.spatialGUI.config.SpatialGUIConfig;
 
 public final class EditorHistory {
     private static final int MAX_STEPS = 100;
     private static final long SCROLL_SETTLE_MS = 400;
 
-    private record Snapshot(double fpScale, double scale, double fpSide, double side,
-            double fpHeight, double height, double fpDistance, double distance) {
+    private record Snapshot(
+            SpatialGUIConfig.ViewMode viewMode,
+            double fpScale, double scale,
+            double fpSide, double side,
+            double fpHeight, double height,
+            double fpDistance, double distance,
+            double fpYaw, double yaw,
+            double fpPitch, double pitch,
+            boolean curvedEnabled, int curvedArcDegrees) {
 
         static Snapshot capture() {
             var c = ConfigManager.config();
             return new Snapshot(
+                    c.viewMode,
                     c.firstPersonScreenScale, c.screenScale,
                     c.firstPersonScreenSideOffset, c.screenSideOffset,
                     c.firstPersonScreenHeightOffset, c.screenHeightOffset,
-                    c.firstPersonScreenDistance, c.screenDistance);
+                    c.firstPersonScreenDistance, c.screenDistance,
+                    c.firstPersonScreenYawOffset, c.screenYawOffset,
+                    c.firstPersonScreenPitchOffset, c.screenPitchOffset,
+                    c.curvedScreenEnabled, c.curvedScreenArcDegrees);
         }
 
         void apply() {
             var c = ConfigManager.config();
+            c.viewMode = viewMode;
             c.firstPersonScreenScale = fpScale;
             c.screenScale = scale;
             c.firstPersonScreenSideOffset = fpSide;
@@ -30,6 +43,12 @@ public final class EditorHistory {
             c.screenHeightOffset = height;
             c.firstPersonScreenDistance = fpDistance;
             c.screenDistance = distance;
+            c.firstPersonScreenYawOffset = fpYaw;
+            c.screenYawOffset = yaw;
+            c.firstPersonScreenPitchOffset = fpPitch;
+            c.screenPitchOffset = pitch;
+            c.curvedScreenEnabled = curvedEnabled;
+            c.curvedScreenArcDegrees = curvedArcDegrees;
         }
     }
 
@@ -90,6 +109,10 @@ public final class EditorHistory {
         while (undoStack.size() > 1) redoStack.push(undoStack.pop());
         last = undoStack.pop();
         last.apply();
+    }
+
+    public static void markScroll() {
+        lastScrollMs = System.currentTimeMillis();
     }
 
     public static boolean canUndo() {

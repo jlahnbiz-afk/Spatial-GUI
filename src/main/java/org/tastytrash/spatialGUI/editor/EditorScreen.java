@@ -37,10 +37,21 @@ public class EditorScreen extends Screen {
 
     private static final int BUTTON_WIDTH = 90;
     private static final int BUTTON_SPACING = 4;
+    private static final int SLIDER_WIDTH = 110;
+    private static final int SLIDER_HEIGHT = 15;
     private static final Button[] widgets = new Button[EditorMode.BUTTONS.length];
 
     static {
         Arrays.setAll(widgets, i -> EditorUtil.button(BUTTON_WIDTH));
+    }
+
+    private static final EditorSliderButton[] sliderWidgets = new EditorSliderButton[EditorMode.SLIDERS.length];
+
+    static {
+        Arrays.setAll(sliderWidgets, i -> {
+            var slider = EditorMode.SLIDERS[i];
+            return new EditorSliderButton(SLIDER_WIDTH, SLIDER_HEIGHT, slider.label(), slider.min(), slider.max(), slider.set());
+        });
     }
 
     private static void drawButtons(Object g, Minecraft client) {
@@ -52,6 +63,7 @@ public class EditorScreen extends Screen {
         int leftCount = 0, rightCount = 0;
         for (int i = widgets.length - 1; i >= 0; i--) {
             var button = EditorMode.BUTTONS[i];
+            if (!button.visible().getAsBoolean()) continue;
             boolean right = button.rightSide();
             int slot = right ? rightCount++ : leftCount++;
             int x = right ? guiWidth - EditorUtil.SCREEN_MARGIN - BUTTON_WIDTH : EditorUtil.SCREEN_MARGIN;
@@ -59,8 +71,24 @@ public class EditorScreen extends Screen {
             EditorUtil.drawButton(widgets[i], button.label().get(), x, y, usable && button.enabled().getAsBoolean(), g);
         }
 
+        int sliderSlot = 0;
+        for (int i = sliderWidgets.length - 1; i >= 0; i--) {
+            var slider = EditorMode.SLIDERS[i];
+            if (!slider.visible().getAsBoolean()) continue;
+            drawSlider(sliderWidgets[i], slider.get().getAsDouble(), guiWidth, guiHeight, sliderSlot++, usable, g);
+        }
+
         EditorDropdown.draw(g, guiWidth);
         EditorHelp.draw(g, guiWidth, guiHeight);
+    }
+
+    private static void drawSlider(EditorSliderButton slider, double actual, int guiWidth, int guiHeight, int row, boolean usable, Object g) {
+        slider.setPosition((guiWidth - SLIDER_WIDTH) / 2,
+                guiHeight - EditorUtil.SCREEN_MARGIN - SLIDER_HEIGHT - row * (SLIDER_HEIGHT + BUTTON_SPACING));
+        if (slider.dragging()) slider.dragTo(EditorUtil.cursorX());
+        else slider.sync(actual);
+        slider.active = usable;
+        EditorUtil.renderWidget(slider, g);
     }
 
     private static boolean clickFlatButton(int mouseButton) {
@@ -70,7 +98,15 @@ public class EditorScreen extends Screen {
         if (EditorHelp.clickHelpButton(cursorX, cursorY, mouseButton)) return true;
         if (EditorDropdown.click(cursorX, cursorY, mouseButton)) return true;
         if (mouseButton != InputConstants.MOUSE_BUTTON_LEFT) return false;
+        for (int i = 0; i < sliderWidgets.length; i++) {
+            if (!EditorMode.SLIDERS[i].visible().getAsBoolean()) continue;
+            if (sliderWidgets[i].isMouseOver(cursorX, cursorY)) {
+                sliderWidgets[i].press(cursorX);
+                return true;
+            }
+        }
         for (int i = 0; i < widgets.length; i++) {
+            if (!EditorMode.BUTTONS[i].visible().getAsBoolean()) continue;
             if (widgets[i].isMouseOver(cursorX, cursorY)) {
                 EditorMode.BUTTONS[i].action().run();
                 return true;
@@ -95,6 +131,11 @@ public class EditorScreen extends Screen {
 
     @Override
     public void removed() {
+        for (EditorSliderButton slider : sliderWidgets) {
+            if (!slider.dragging()) continue;
+            slider.release();
+            EditorHistory.checkpoint();
+        }
         EditorDropdown.close();
         EditorGizmo.setPressed(false);
         EditorHistory.checkpoint();
@@ -176,6 +217,7 @@ public class EditorScreen extends Screen {
         } else {
             config.screenDistance = Mth.clamp(config.screenDistance + distanceDelta, 0.1, 10.0);
         }
+        EditorHistory.markScroll();
         return true;
     }
 
@@ -281,6 +323,11 @@ public class EditorScreen extends Screen {
             EditorUtil.drawTranslatedText(g, key, EditorUtil.SCREEN_MARGIN, y);
             y += 10;
         }
+
+        //? if <=1.21.1 {
+        /*((GuiGraphicsExtractor) g).flush();
+         *///?}
+
         drawButtons(g, client);
 
         EditorUtil.popScale(g);
@@ -326,7 +373,14 @@ public class EditorScreen extends Screen {
         //? if >1.21.1 {
         int button = event.button();
         //?}
-        if (button == InputConstants.MOUSE_BUTTON_LEFT) EditorGizmo.setPressed(false);
+        if (button == InputConstants.MOUSE_BUTTON_LEFT) {
+            for (EditorSliderButton slider : sliderWidgets) {
+                if (!slider.dragging()) continue;
+                slider.release();
+                EditorHistory.checkpoint();
+            }
+            EditorGizmo.setPressed(false);
+        }
         //? if >1.21.1 {
         return super.mouseReleased(event);
         //?} else {

@@ -121,7 +121,10 @@ public class SpatialGUIClient {
     }
 
     public static boolean shouldHideHotbar() {
-        return SpatialGUIAPI.isActive() && ConfigManager.config().hideHotbar;
+        if (!SpatialGUIAPI.isActive()) return false;
+        var renderer = renderer();
+        boolean editorOpen = renderer != null && renderer.getHookedScreen() instanceof EditorScreen;
+        return editorOpen || ConfigManager.config().hideHotbar;
     }
 
     public static boolean shouldHideCrosshair() {

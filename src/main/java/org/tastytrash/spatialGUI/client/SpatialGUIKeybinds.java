@@ -147,7 +147,7 @@ public class SpatialGUIKeybinds {
         reloadProfiles = createKey(RELOAD_PROFILES_KEY);
         openEditor = createKey(OPEN_EDITOR_KEY);
         toggleMouseFree = createKey(TOGGLE_MOUSE_FREE_KEY, InputConstants.KEY_LALT);
-        openProfilePicker = createKey(OPEN_PROFILE_PICKER_KEY);
+        openProfilePicker = createKey(OPEN_PROFILE_PICKER_KEY, InputConstants.KEY_GRAVE);
         return new KeyMapping[]{openConfig, reloadProfiles, openEditor, toggleMouseFree, openProfilePicker};
     }
 

@@ -1,0 +1,58 @@
+package org.tastytrash.spatialGUI.editor;
+
+import net.minecraft.client.gui.components.AbstractSliderButton;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
+
+import java.util.function.DoubleConsumer;
+
+public final class EditorSliderButton extends AbstractSliderButton {
+    private final String label;
+    private final double min;
+    private final double max;
+    private final DoubleConsumer onChange;
+    private boolean dragging;
+
+    public EditorSliderButton(int width, int height, String label, double min, double max, DoubleConsumer onChange) {
+        super(0, 0, width, height, Component.empty(), 0);
+        this.label = label;
+        this.min = min;
+        this.max = max;
+        this.onChange = onChange;
+        updateMessage();
+    }
+
+    public boolean dragging() {
+        return dragging;
+    }
+
+    public void sync(double actual) {
+        value = Mth.clamp((actual - min) / (max - min), 0, 1);
+        updateMessage();
+    }
+
+    public void press(double cursorX) {
+        dragging = true;
+        dragTo(cursorX);
+    }
+
+    public void release() {
+        dragging = false;
+    }
+
+    public void dragTo(double cursorX) {
+        value = Mth.clamp((cursorX - getX() - 4) / (getWidth() - 8), 0, 1);
+        applyValue();
+        updateMessage();
+    }
+
+    @Override
+    protected void updateMessage() {
+        setMessage(Component.literal(label + ": " + String.format("%.2f", min + value * (max - min))));
+    }
+
+    @Override
+    protected void applyValue() {
+        onChange.accept(min + value * (max - min));
+    }
+}

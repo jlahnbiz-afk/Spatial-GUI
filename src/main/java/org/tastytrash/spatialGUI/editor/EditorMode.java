@@ -3,6 +3,8 @@ package org.tastytrash.spatialGUI.editor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
+import java.util.function.DoubleConsumer;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import net.minecraft.client.Minecraft;
@@ -16,17 +18,38 @@ import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 import org.tastytrash.spatialGUI.util.MouseHandlerUtil;
 
 public class EditorMode {
-    public record EditorButton(Supplier<Component> label, boolean rightSide, Runnable action, BooleanSupplier enabled) {}
+    public record EditorButton(Supplier<Component> label, boolean rightSide, Runnable action, BooleanSupplier enabled, BooleanSupplier visible) {
+        public EditorButton(Supplier<Component> label, boolean rightSide, Runnable action, BooleanSupplier enabled) {
+            this(label, rightSide, action, enabled, () -> true);
+        }
+        public EditorButton(Supplier<Component> label, boolean rightSide, Runnable action) {
+            this(label, rightSide, action, () -> true);
+        }
+    }
 
     public static final EditorButton[] BUTTONS = {
             new EditorButton(() -> Component.translatable("spatial-gui.editor.button.undo"), false, EditorHistory::undo, EditorHistory::canUndo),
             new EditorButton(() -> Component.translatable("spatial-gui.editor.button.redo"), false, EditorHistory::redo, EditorHistory::canRedo),
-            new EditorButton(() -> Component.translatable("spatial-gui.editor.button.toggle_view"), false, EditorMode::toggleView, () -> true),
-            new EditorButton(EditorMode::guiScaleLabel, false, EditorMode::cycleGuiScale, () -> true),
-            new EditorButton(EditorMode::curvedScreenLabel, false, EditorMode::toggleCurvedScreen, SpatialGUIClient::getEffectiveFirstPersonMode),
+            new EditorButton(() -> Component.translatable("spatial-gui.editor.button.toggle_view"), false, EditorMode::toggleView),
+            new EditorButton(EditorMode::guiScaleLabel, false, EditorMode::cycleGuiScale),
+            new EditorButton(EditorMode::curvedScreenLabel, false, EditorMode::toggleCurvedScreen, () -> true, SpatialGUIClient::getEffectiveFirstPersonMode),
             new EditorButton(() -> Component.translatable("spatial-gui.editor.button.undo_all"), true, EditorHistory::undoAll, EditorHistory::canUndo),
             new EditorButton(() -> Component.translatable("spatial-gui.editor.button.set_default"), true, EditorProfiles::setAsDefault, EditorProfiles::canSetDefault),
-            new EditorButton(() -> Component.translatable("spatial-gui.editor.button.save_quit"), true, () -> toggle(Minecraft.getInstance()), () -> true)
+            new EditorButton(() -> Component.translatable("spatial-gui.editor.button.save_quit"), true, () -> toggle(Minecraft.getInstance()))
+    };
+
+    public record EditorSlider(Supplier<Component> label, double min, double max, DoubleSupplier get, DoubleConsumer set, BooleanSupplier visible) {
+        public EditorSlider(Supplier<Component> label, double min, double max, DoubleSupplier get, DoubleConsumer set) {
+            this(label, min, max, get, set, () -> true);
+        }
+    }
+
+    public static final EditorSlider[] SLIDERS = {
+            new EditorSlider(() -> Component.translatable("spatial-gui.editor.slider.arc"), 5, 150, () -> ConfigManager.config().curvedScreenArcDegrees,
+                    degrees -> ConfigManager.config().curvedScreenArcDegrees = (int) Math.round(degrees),
+                    () -> SpatialGUIClient.getEffectiveFirstPersonMode() && ConfigManager.config().curvedScreenEnabled),
+            new EditorSlider(() -> Component.translatable("spatial-gui.editor.slider.yaw"), 0, 360, EditorMode::yaw, EditorMode::setYaw),
+            new EditorSlider(() -> Component.translatable("spatial-gui.editor.slider.pitch"), -90, 90, EditorMode::pitch, EditorMode::setPitch)
     };
 
     private static Boolean viewOverride;
@@ -83,6 +106,30 @@ public class EditorMode {
         mouseFree = false;
     }
 
+    private static double yaw() {
+        var config = ConfigManager.config();
+        return SpatialGUIClient.getEffectiveFirstPersonMode() ? config.firstPersonScreenYawOffset : config.screenYawOffset;
+    }
+
+    private static void setYaw(double value) {
+        var config = ConfigManager.config();
+        double rounded = Math.round(value);
+        if (SpatialGUIClient.getEffectiveFirstPersonMode()) config.firstPersonScreenYawOffset = rounded;
+        else config.screenYawOffset = rounded;
+    }
+
+    private static double pitch() {
+        var config = ConfigManager.config();
+        return SpatialGUIClient.getEffectiveFirstPersonMode() ? config.firstPersonScreenPitchOffset : config.screenPitchOffset;
+    }
+
+    private static void setPitch(double value) {
+        var config = ConfigManager.config();
+        double rounded = Math.round(value);
+        if (SpatialGUIClient.getEffectiveFirstPersonMode()) config.firstPersonScreenPitchOffset = rounded;
+        else config.screenPitchOffset = rounded;
+    }
+
     private static int maxGuiScale() {
         var window = Minecraft.getInstance().getWindow();
         return Mth.clamp(Math.min(window.getWidth() / 320, window.getHeight() / 240), 1, 6);
@@ -107,7 +154,7 @@ public class EditorMode {
             client.screen.resize(client.getWindow().getGuiScaledWidth(), client.getWindow().getGuiScaledHeight());
             //?} else {
             /*client.screen.resize(client, client.getWindow().getGuiScaledWidth(), client.getWindow().getGuiScaledHeight());
-            *///?}
+             *///?}
         }
     }
 
@@ -165,5 +212,6 @@ public class EditorMode {
         } else {
             config.screenDistance = 2.5;
         }
+        EditorHistory.checkpoint();
     }
 }
