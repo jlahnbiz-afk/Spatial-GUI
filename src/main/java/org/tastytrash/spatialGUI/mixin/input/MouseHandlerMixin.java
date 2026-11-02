@@ -137,14 +137,11 @@ public class MouseHandlerMixin {
         //? if >=26.3 {
         /*original.call(handle, outX, outY, xrel, yrel);
          *///?} else {
-        double beforeX = this.accumulatedDX;
-        double beforeY = this.accumulatedDY;
-        original.call(handle, outX, outY);
-        if (restoreTurn) {
-            boolean accumulate = grabbed && !ignoreFirst;
-            this.accumulatedDX = beforeX + (accumulate ? delta[0] : 0.0);
-            this.accumulatedDY = beforeY + (accumulate ? delta[1] : 0.0);
+        if (restoreTurn && grabbed && !ignoreFirst && mc.isWindowActive()) {
+            this.accumulatedDX += delta[0] - (outX - acc.getRawXpos());
+            this.accumulatedDY += delta[1] - (outY - acc.getRawYpos());
         }
+        original.call(handle, outX, outY);
         //?}
     }
 
