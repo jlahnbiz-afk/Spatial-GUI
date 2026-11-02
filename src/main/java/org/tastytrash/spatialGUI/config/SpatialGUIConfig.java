@@ -229,10 +229,20 @@ public class SpatialGUIConfig {
     @TickBox
     public boolean hideShieldInFirstPerson = true;
 
+    @MasterTickBox(value = {"handPokeStrength"})
     @SerialEntry
     @AutoGen(category = "appearance", group = "firstPersonHands")
-    @TickBox
     public boolean swingArmOnFirstPersonClick = false;
+
+    @SerialEntry
+    @AutoGen(category = "appearance", group = "firstPersonHands")
+    @DoubleSlider(min = 0.25, max = 2.5, step = 0.05)
+    public double handPokeStrength = 1.0;
+
+    @SerialEntry
+    @AutoGen(category = "appearance", group = "firstPersonHands")
+    @IntSlider(min = 50, max = 500, step = 10)
+    public int handPokeDurationMs = 150;
 
     // texture
     @SerialEntry

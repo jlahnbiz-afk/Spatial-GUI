@@ -261,6 +261,22 @@ public class SpatialGUIClient {
         capturingPanorama = value;
     }
 
+    private static long handPokeStart = -1;
+
+    public static void startHandPoke() {
+        handPokeStart = System.nanoTime();
+    }
+
+    public static float handPokeOffset() {
+        if (handPokeStart < 0) return 0f;
+        float t = (System.nanoTime() - handPokeStart) / (ConfigManager.config().handPokeDurationMs * 1_000_000f);
+        if (t >= 1f) {
+            handPokeStart = -1;
+            return 0f;
+        }
+        return (float) (0.05 * ConfigManager.config().handPokeStrength * Math.sin(Math.PI * Math.pow(t, 0.45)));
+    }
+
     public static Vec3 getCameraPosition() {
         return cameraPosition;
     }

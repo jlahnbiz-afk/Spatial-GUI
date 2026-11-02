@@ -24,6 +24,10 @@ import org.tastytrash.spatialGUI.mixin.accessor.MouseHandlerAccessor;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 import org.tastytrash.spatialGUI.util.MouseHandlerUtil;
 
+//? if >=1.21.11 {
+import net.minecraft.client.input.MouseButtonInfo;
+//?}
+
 @Mixin(value = MouseHandler.class, priority = 1100)
 public class MouseHandlerMixin {
 
@@ -189,5 +193,30 @@ public class MouseHandlerMixin {
         var acc = (MouseHandlerAccessor) (Object) this;
         acc.setRawXpos(spatialGUI$preReleaseX);
         acc.setRawYpos(spatialGUI$preReleaseY);
+    }
+
+    //? if >=1.21.11 {
+    @Inject(method = "onButton", at = @At("HEAD"))
+    private void spatialGUI$pokeOnClick(long handle, MouseButtonInfo rawButtonInfo, int action, CallbackInfo ci) {
+        spatialGUI$pokeHand(action);
+    }
+    //?} else {
+    /*@Inject(method = "onPress", at = @At("HEAD"))
+    private void spatialGUI$pokeOnClick(long handle, int button, int action, int mods, CallbackInfo ci) {
+        spatialGUI$pokeHand(action);
+    }
+    *///?}
+
+    @Unique
+    private static void spatialGUI$pokeHand(int action) {
+        if (action != 1 || !SpatialGUIClient.isEnabled() || !ConfigManager.config().swingArmOnFirstPersonClick) return;
+        var renderer = SpatialGUIClient.renderer();
+        if (renderer == null || !SpatialGUIClient.getEffectiveFirstPersonMode()) return;
+        //? if >=26.2 {
+        /*Screen screen = Minecraft.getInstance().gui.screen();
+         *///?} else {
+        Screen screen = Minecraft.getInstance().screen;
+        //?}
+        if (screen != null && screen == renderer.getHookedScreen()) SpatialGUIClient.startHandPoke();
     }
 }

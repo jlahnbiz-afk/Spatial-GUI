@@ -26,7 +26,6 @@
     "hud.ToastComponentMixin",
     "input.GuiGraphicsCursorMixin",
     "input.InputConstantsMixin",
-    "input.MouseHandlerArmSwingMixin",
     "input.MouseHandlerMixin",
     "player.AvatarRendererMixin",
     "player.HandRendererMixin",

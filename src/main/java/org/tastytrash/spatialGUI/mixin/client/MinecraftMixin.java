@@ -39,7 +39,7 @@ public class MinecraftMixin {
         SpatialGUIClient.setCapturingPanorama(true);
     }
 
-    @Inject(method = "grabPanoramixScreenshot", at = @At("TAIL"))
+    @Inject(method = "grabPanoramixScreenshot", at = @At("RETURN"))
     private void spatialGUI$onPanoramaCaptureEnd(CallbackInfoReturnable<String> cir) {
         SpatialGUIClient.setCapturingPanorama(false);
     }

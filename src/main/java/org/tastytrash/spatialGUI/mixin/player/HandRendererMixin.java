@@ -22,6 +22,7 @@ import net.minecraft.world.item.Items;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.tastytrash.spatialGUI.SpatialGUI;
@@ -31,6 +32,11 @@ import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 //? if >26.2 {
 /*@Mixin(FirstPersonHandsAndItemsRenderer.class)
 public class HandRendererMixin {
+    @ModifyVariable(method = "submitArmWithItem", at = @At("HEAD"), argsOnly = true, ordinal = 3)
+    private float spatialGUI$pokeHand(float inverseArmHeight) {
+        return inverseArmHeight + SpatialGUIClient.handPokeOffset();
+    }
+
     @Inject(method = "submitArmWithItem", at = @At("HEAD"), cancellable = true)
     private void spatialGUI$hideShield(PlayerRenderState playerState, FirstPersonHandsAndItemsRenderState state, float partialTicks, float xRot, InteractionHand hand, float attack, ItemStack itemStack, float inverseArmHeight, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, CallbackInfo ci) {
         if (itemStack.getItem() == Items.SHIELD) {
@@ -44,6 +50,11 @@ public class HandRendererMixin {
 *///? } else {
 @Mixin(ItemInHandRenderer.class)
 public class HandRendererMixin {
+
+    @ModifyVariable(method = {"renderArmWithItem", "submitArmWithItem"}, at = @At("HEAD"), argsOnly = true, ordinal = 3)
+    private float spatialGUI$pokeHand(float inverseArmHeight) {
+        return inverseArmHeight + SpatialGUIClient.handPokeOffset();
+    }
 
     //? if 26.2 {
     /*@Inject(method = "submitArmWithItem", at = @At("HEAD"), cancellable = true)
