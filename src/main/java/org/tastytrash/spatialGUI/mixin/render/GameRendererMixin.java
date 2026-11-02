@@ -762,8 +762,11 @@ public class GameRendererMixin {
         renderer.renderInWorldPost();
 
         boolean firstPerson = closing ? renderer.isClosingFirstPerson() : SpatialGUIClient.getEffectiveFirstPersonMode();
-        if (firstPerson && ConfigManager.config().hideHandsInFirstPerson) {
+        if (!firstPerson) return;
+        if (ConfigManager.config().hideHandsInFirstPerson) {
             ci.cancel();
+        } else {
+            com.mojang.blaze3d.systems.RenderSystem.clear(256, Minecraft.ON_OSX);
         }
     }
 }

@@ -13,6 +13,7 @@ import org.tastytrash.spatialGUI.compat.ControlifyCompat;
 import org.tastytrash.spatialGUI.editor.EditorGizmo;
 import org.tastytrash.spatialGUI.editor.EditorMode;
 import org.tastytrash.spatialGUI.editor.EditorScreen;
+import org.tastytrash.spatialGUI.editor.ProfilePicker;
 import org.tastytrash.spatialGUI.util.GuiScaleUtil;
 import org.tastytrash.spatialGUI.util.MouseHandlerUtil;
 import org.tastytrash.spatialGUI.util.CameraUtil;
@@ -192,6 +193,7 @@ public class SpatialGUIRenderer {
     /^private void onGuiRenderPost(net.minecraftforge.client.event.RenderGuiEvent.Post event) {
         skipWindowOverride = false;
         EditorScreen.drawOverlay(event.getGuiGraphics());
+        ProfilePicker.drawOverlay(event.getGuiGraphics());
     }
     ^///? }
     *///? }

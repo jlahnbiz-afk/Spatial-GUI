@@ -18,12 +18,12 @@ public final class EditorUtil {
 
     public static double cursorX() {
         var window = Minecraft.getInstance().getWindow();
-        return MouseHandlerUtil.getPhysicalX(-1) * window.getGuiScaledWidth() / window.getScreenWidth();
+        return MouseHandlerUtil.getPhysicalX(-1) * GuiScaleUtil.scaledWidth(window) / window.getScreenWidth();
     }
 
     public static double cursorY() {
         var window = Minecraft.getInstance().getWindow();
-        return MouseHandlerUtil.getPhysicalY(-1) * window.getGuiScaledHeight() / window.getScreenHeight();
+        return MouseHandlerUtil.getPhysicalY(-1) * GuiScaleUtil.scaledHeight(window) / window.getScreenHeight();
     }
 
     public static void drawButton(Button button, Component label, int x, int y, boolean active, Object g) {
