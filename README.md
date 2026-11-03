@@ -61,7 +61,7 @@ For advanced users and modpack creators, per-screen configuration profiles are s
 
 Spatial GUI includes a built-in visual editor that lets you configure screen position, scale, rotation, and more in real-time. You can also create and manage profiles for different screens. Press the button in the config to enter editor mode, or bind it to a keybind in controls.
 
-![Spatial GUI Editor](https://cdn.modrinth.com/data/cached_images/f30a9d8b53b44316a128191a6ecf3eb28de649d8.png)
+![Spatial GUI Editor](https://cdn.modrinth.com/data/cached_images/e89769d11ba073af6a481c6dc51fee8b2067fabc.png)
 
 #### Profile Picker
 

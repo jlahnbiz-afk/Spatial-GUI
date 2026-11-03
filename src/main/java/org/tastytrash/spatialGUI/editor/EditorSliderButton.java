@@ -3,6 +3,12 @@ package org.tastytrash.spatialGUI.editor;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
+//? if 1.20.1 {
+/*import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.resources.ResourceLocation;
+*///?}
 
 import java.util.function.DoubleConsumer;
 import java.util.function.Supplier;
@@ -13,6 +19,10 @@ public final class EditorSliderButton extends AbstractSliderButton {
     private final double max;
     private final DoubleConsumer onChange;
     private boolean dragging;
+
+    //? if 1.20.1 {
+//    private static final ResourceLocation SLIDER_TEXTURE = new ResourceLocation("textures/gui/slider.png");
+    //?}
 
     public EditorSliderButton(int width, int height, Supplier<Component> label, double min, double max, DoubleConsumer onChange) {
         super(0, 0, width, height, Component.empty(), 0);
@@ -56,4 +66,14 @@ public final class EditorSliderButton extends AbstractSliderButton {
     protected void applyValue() {
         onChange.accept(min + value * (max - min));
     }
-}
+
+    //? if 1.20.1 {
+    /*@Override
+    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        RenderSystem.enableBlend();
+        graphics.blitNineSliced(SLIDER_TEXTURE, getX(), getY(), getWidth(), getHeight(), 20, 4, 200, 20, 0, 0);
+        graphics.blitNineSliced(SLIDER_TEXTURE, getX() + (int) (value * (getWidth() - 8)), getY(), 8, getHeight(), 20, 4, 200, 20, 0, isHoveredOrFocused() ? 60 : 40);
+        renderScrollingString(graphics, Minecraft.getInstance().font, 2, active ? 0xFFFFFFFF : 0xFFA0A0A0);
+    }
+    *///?}
+}

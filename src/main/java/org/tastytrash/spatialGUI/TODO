@@ -2,10 +2,6 @@ __________ FIXES _________________
 ================================
 -------- HIGH PRIORITY ---------------
 
-Slider handle is too large in 1.20.1
-
-No clicking sound on editor buttons
-
 Compat:
  - Real Camera (#25) (May not be possible)
  - Item Zoomer (Forge 1.20.1 w/ JEI)
@@ -14,8 +10,6 @@ Compat:
 -------- MID PRIORITY ---------------
 
 Change third person default config
-
-Config option to enable texture world depth
 
 Hand bob gets reset when leaving the GUI
 
@@ -32,6 +26,8 @@ __________ SUGGESTIONS/FEATURES _________________
 
 Refresh rate?
 
+Config option to enable texture world depth
+
 Compat with zoom mods
 
 Rework drop shadow softness/layers, maybe replace with soft edges?
@@ -39,6 +35,7 @@ Rework drop shadow softness/layers, maybe replace with soft edges?
 /////////////////////////////////////
 Visual editor
 High priority:
+ - Add button clicking sounds
  - Camera controls for third person
  - More obvious tip to press tab when mouse is grabbed
 
