@@ -66,6 +66,7 @@ public final class ConfigManager {
         lastHooked = null;
 
         Minecraft client = Minecraft.getInstance();
+        if (client == null || client.gui == null) return global;
         Screen screen = client.screen;
         return screen != null ? configFor(screen) : global;
     }

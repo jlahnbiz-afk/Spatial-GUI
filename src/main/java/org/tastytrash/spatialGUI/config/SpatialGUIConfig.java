@@ -229,10 +229,15 @@ public class SpatialGUIConfig {
     @TickBox
     public boolean hideShieldInFirstPerson = true;
 
-    @MasterTickBox(value = {"handPokeStrength"})
+    @MasterTickBox(value = {"handPokeAnimation"}, invert = true)
     @SerialEntry
     @AutoGen(category = "appearance", group = "firstPersonHands")
-    public boolean swingArmOnFirstPersonClick = false;
+    public boolean armSwing = false;
+
+    @MasterTickBox(value = {"handPokeStrength", "handPokeDurationMs"})
+    @SerialEntry
+    @AutoGen(category = "appearance", group = "firstPersonHands")
+    public boolean handPokeAnimation = false;
 
     @SerialEntry
     @AutoGen(category = "appearance", group = "firstPersonHands")

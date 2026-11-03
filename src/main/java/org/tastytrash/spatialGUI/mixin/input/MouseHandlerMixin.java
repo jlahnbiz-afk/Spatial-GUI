@@ -7,6 +7,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.world.InteractionHand;
 import org.joml.Vector2d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -209,14 +210,29 @@ public class MouseHandlerMixin {
 
     @Unique
     private static void spatialGUI$pokeHand(int action) {
-        if (action != 1 || !SpatialGUIClient.isEnabled() || !ConfigManager.config().swingArmOnFirstPersonClick) return;
+        if (action != 1 || !SpatialGUIClient.isEnabled()) return;
         var renderer = SpatialGUIClient.renderer();
-        if (renderer == null || !SpatialGUIClient.getEffectiveFirstPersonMode()) return;
+        if (renderer == null) return;
         //? if >=26.2 {
         /*Screen screen = Minecraft.getInstance().gui.screen();
          *///?} else {
         Screen screen = Minecraft.getInstance().screen;
         //?}
-        if (screen != null && screen == renderer.getHookedScreen()) SpatialGUIClient.startHandPoke();
+        if (screen == null || screen != renderer.getHookedScreen()) return;
+
+        var config = ConfigManager.config();
+        if (config.armSwing) {
+            var player = Minecraft.getInstance().player;
+            if (player != null) {
+                //? if >=26.3 {
+                /*var heldItem = player.getItemInHand(InteractionHand.MAIN_HAND);
+                player.swing(InteractionHand.MAIN_HAND, heldItem.getAttackAnimation(), false);
+                 *///?} else {
+                player.swing(InteractionHand.MAIN_HAND);
+                //?}
+            }
+        } else if (config.handPokeAnimation) {
+            SpatialGUIClient.startHandPoke();
+        }
     }
 }
