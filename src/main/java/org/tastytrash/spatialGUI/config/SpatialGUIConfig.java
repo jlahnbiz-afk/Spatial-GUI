@@ -179,8 +179,8 @@ public class SpatialGUIConfig {
 
     @SerialEntry
     @AutoGen(category = "appearance", group = "dropShadow")
-    @IntSlider(min = 1, max = 6, step = 1)
-    public int dropShadowLayers = 1;
+    @DoubleSlider(min = 0.0, max = 0.05, step = 0.001)
+    public double dropShadowSoftness = 0.0;
 
     @SerialEntry
     @AutoGen(category = "appearance", group = "dropShadow")
@@ -275,6 +275,26 @@ public class SpatialGUIConfig {
     @AutoGen(category = "appearance", group = "texture")
     @IntSlider(min = 1, max = 10, step = 1)
     public int worldBlurStrength = 5;
+
+    @SerialEntry
+    @AutoGen(category = "appearance", group = "texture")
+    @EnumCycler
+    public WorldEffect worldEffect = WorldEffect.NONE;
+
+    public enum WorldEffect {
+        NONE(null),
+        DIM("spatial-gui:dim"),
+        DARK("spatial-gui:dark"),
+        PIXELATE("spatial-gui:pixelate"),
+        GRAYSCALE("spatial-gui:grayscale"),
+        DESATURATE("spatial-gui:desaturate");
+
+        public final String chain;
+
+        WorldEffect(String chain) {
+            this.chain = chain;
+        }
+    }
     //?}
 
     @SerialEntry

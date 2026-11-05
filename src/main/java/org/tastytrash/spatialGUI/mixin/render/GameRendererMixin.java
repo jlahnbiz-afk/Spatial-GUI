@@ -53,6 +53,28 @@ public abstract class GameRendererMixin {
     @Final @Shadow private net.minecraft.client.renderer.ProjectionMatrixBuffer hud3dProjectionMatrixBuffer;
     @Final @Shadow private net.minecraft.client.renderer.feature.FeatureRenderDispatcher featureRenderDispatcher;
     @Shadow private boolean useUiLightmap;
+
+    @Final @Shadow private com.mojang.blaze3d.resource.CrossFrameResourcePool resourcePool;
+
+    @Unique
+    private String spatialGUI$warnedEffect;
+
+    @Unique
+    private void spatialGUI$applyWorldEffect(String id) {
+        Minecraft mc = Minecraft.getInstance();
+        var chain = mc.getShaderManager().getPostChain(net.minecraft.resources.Identifier.parse(id), net.minecraft.client.renderer.LevelTargetBundle.MAIN_TARGETS);
+        if (chain != null) {
+            //? if >=26.2 {
+            /*chain.process(mc.gameRenderer.mainRenderTarget(), this.resourcePool);
+            *///?} else {
+            chain.process(mc.getMainRenderTarget(), this.resourcePool);
+            //?}
+        } else if (!id.equals(spatialGUI$warnedEffect)) {
+            spatialGUI$warnedEffect = id;
+            org.tastytrash.spatialGUI.SpatialGUI.LOGGER.warn("[SpatialGUI/WorldEffect] post chain {} failed to load", id);
+        }
+    }
+
     //? if >=26.2 {
     /*@Shadow @Final private net.minecraft.client.renderer.SubmitNodeStorage handAndScreenSubmitNodeStorage;
      *///?} else {
@@ -345,6 +367,10 @@ public abstract class GameRendererMixin {
             boolean playerInFront = ConfigManager.config().renderPlayerInFront;
             if (ConfigManager.config().blurWorldBackground) {
                 WorldBlurRenderer.applyBlur(ConfigManager.config().worldBlurStrength);
+            }
+
+            if (ConfigManager.config().worldEffect.chain != null) {
+                spatialGUI$applyWorldEffect(ConfigManager.config().worldEffect.chain);
             }
 
             if (!playerInFront) spatialGUI$renderPlayerInFront();

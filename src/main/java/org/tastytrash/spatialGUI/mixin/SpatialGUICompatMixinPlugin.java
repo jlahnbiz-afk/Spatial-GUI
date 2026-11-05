@@ -26,17 +26,18 @@ public class SpatialGUICompatMixinPlugin implements IMixinConfigPlugin {
          *///?}
     }
 
-    private static final Map<String, String> OPTIONAL_MIXINS = Map.of(
-            "compat.ControlifyMixin", "controlify",
-            "compat.ControlifyNeoForgeMixin", "controlify",
-            "compat.OwoBlurMixin", "owo",
-            "compat.PolytoneMixin", "polytone",
-            "compat.SophisticatedCoreMixin", "sophisticatedcore",
-            "compat.CreateStockKeeperMixin", "create",
-            "compat.StorageDrawersMixin", "storagedrawers",
-            "compat.ShoulderSurfingCrosshairMixin", "shouldersurfing",
-            "compat.WatutMixin", "watut",
-            "compat.LeawindsTPCrosshairMixin", "leawind_third_person"
+    private static final Map<String, String> OPTIONAL_MIXINS = Map.ofEntries(
+            Map.entry("compat.ControlifyMixin", "controlify"),
+            Map.entry("compat.ControlifyNeoForgeMixin", "controlify"),
+            Map.entry("compat.OwoBlurMixin", "owo"),
+            Map.entry("compat.PolytoneMixin", "polytone"),
+            Map.entry("compat.SophisticatedCoreMixin", "sophisticatedcore"),
+            Map.entry("compat.CreateStockKeeperMixin", "create"),
+            Map.entry("compat.StorageDrawersMixin", "storagedrawers"),
+            Map.entry("compat.ShoulderSurfingCrosshairMixin", "shouldersurfing"),
+            Map.entry("compat.WatutMixin", "watut"),
+            Map.entry("compat.LeawindsTPCrosshairMixin", "leawind_third_person"),
+            Map.entry("compat.DynamicCrosshairMixin", "dynamiccrosshair")
     );
 
     @Override

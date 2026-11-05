@@ -14,7 +14,9 @@ import org.tastytrash.spatialGUI.util.RenderUtil.CylinderBasis;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.system.MemoryStack;
 import java.nio.DoubleBuffer;
-//?}
+//?} else {
+/*import org.lwjgl.sdl.SDLMouse;
+ *///?}
 
 public class MouseHandlerUtil {
     private MouseHandlerUtil() {}
@@ -178,7 +180,7 @@ public class MouseHandlerUtil {
          *///?}
         boolean cursorFree = GLFW.glfwGetInputMode(window, GLFW.GLFW_CURSOR) != GLFW.GLFW_CURSOR_DISABLED;
         //?} else {
-        /*boolean cursorFree = true;
+        /*boolean cursorFree = !SDLMouse.SDL_GetWindowRelativeMouseMode(mc.getWindow().handle());
          *///?}
 
         if (!accessor.getMouseGrabbed() && cursorFree) return;

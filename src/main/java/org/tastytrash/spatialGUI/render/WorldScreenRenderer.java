@@ -70,8 +70,16 @@ import org.tastytrash.spatialGUI.util.RenderUtil;
 public class WorldScreenRenderer {
     private static final PoseStack WORLD_POSE_STACK = new PoseStack();
     //? if >1.21.1 {
-    private static final RenderPipeline SCREEN_PIPELINE = RenderPipelines.GUI_TEXTURED;
+    //? if 1.21.11 {
+    /*private static final RenderPipeline SCREEN_PIPELINE = RenderPipeline.builder(RenderPipelines.GUI_TEXTURED_SNIPPET).withLocation("pipeline/spatial_gui_screen").withDepthWrite(false).build();
+    private static final RenderPipeline OVERLAY_PIPELINE = RenderPipeline.builder(RenderPipelines.GUI_SNIPPET).withLocation("pipeline/spatial_gui_overlay").withDepthWrite(false).build();
+    *///?} else if 26.1.2 {
+    private static final RenderPipeline SCREEN_PIPELINE = RenderPipeline.builder(RenderPipelines.GUI_TEXTURED_SNIPPET).withLocation("pipeline/spatial_gui_screen").withDepthStencilState(java.util.Optional.empty()).build();
+    private static final RenderPipeline OVERLAY_PIPELINE = RenderPipeline.builder(RenderPipelines.GUI_SNIPPET).withLocation("pipeline/spatial_gui_overlay").withDepthStencilState(java.util.Optional.empty()).build();
+    //?} else {
+    /*private static final RenderPipeline SCREEN_PIPELINE = RenderPipelines.GUI_TEXTURED;
     private static final RenderPipeline OVERLAY_PIPELINE = RenderPipelines.GUI;
+    *///?}
     private static final org.joml.Vector3f ZERO_VECTOR = new org.joml.Vector3f();
     private static final Matrix4f IDENTITY_MATRIX = new Matrix4f();
     private static final org.joml.Vector4f COLOR_MODULATOR = new org.joml.Vector4f();
@@ -92,6 +100,7 @@ public class WorldScreenRenderer {
     private long basisFrame = -1;
     private int meshQuadCount = 1;
     private static final int CURVED_SEGMENTS = 32;
+    private static final int SHADOW_TAPS = 12;
     private long screenOpenTime = 0;
     private float passAlpha = 1f;
     private static boolean isRecipeBookOpen = false;
@@ -215,33 +224,34 @@ public class WorldScreenRenderer {
     }
 
     private void addScreenQuadMesh(VertexConsumer buffer, Matrix4f pose, float aspect, boolean isFirstPerson) {
+        var config = ConfigManager.config();
         int lightingTint = computeLightingTint();
-        if (isCurvedScreenActive(isFirstPerson)) {
-            float arcRadians = (float) Math.toRadians(ConfigManager.config().curvedScreenArcDegrees);
-            int layers = ConfigManager.config().dropShadowEnabled ? ConfigManager.config().dropShadowLayers : 0;
-            for (int i = 0; i < layers; i++) {
-                float offsetX = (float) (ConfigManager.config().dropShadowHorizontalOffset * (1 + i * 0.5));
-                float offsetY = (float) (ConfigManager.config().dropShadowVerticalOffset * (1 + i * 0.5));
-                float offsetZ = (float) -ConfigManager.config().dropShadowDepthOffset;
-                float scale = (float) (1.0 + (ConfigManager.config().dropShadowScaleMultiplier - 1.0) * (i + 1) / layers);
-                Matrix4f layerPose = new Matrix4f(pose).translate(offsetX, offsetY, offsetZ).scale(scale, scale, scale);
-                RenderUtil.addCurvedScreenQuad(buffer, layerPose, aspect, arcRadians, CURVED_SEGMENTS, 0, ConfigManager.config().dropShadowAlpha / layers);
+        boolean curved = isCurvedScreenActive(isFirstPerson);
+        float arcRadians = (float) Math.toRadians(config.curvedScreenArcDegrees);
+        float softness = (float) config.dropShadowSoftness;
+        int taps = !config.dropShadowEnabled ? 0 : softness > 0 ? SHADOW_TAPS : 1;
+        int tapAlpha = taps <= 1 ? config.dropShadowAlpha : Math.round(255 * (1 - (float) Math.pow(1 - Math.min(config.dropShadowAlpha / 255.0F, 0.92F), 1.0 / taps)));
+
+        for (int i = 0; i < taps; i++) {
+            float angle = i * 2.4F;
+            float radius = softness * (float) Math.sqrt((i + 0.5F) / taps);
+            float offsetX = (float) config.dropShadowHorizontalOffset + radius * (float) Math.cos(angle);
+            float offsetY = (float) config.dropShadowVerticalOffset + radius * (float) Math.sin(angle);
+            float scale = (float) config.dropShadowScaleMultiplier;
+            Matrix4f tapPose = new Matrix4f(pose).translate(offsetX, offsetY, (float) -config.dropShadowDepthOffset).scale(scale, scale, scale);
+            if (curved) {
+                RenderUtil.addCurvedScreenQuad(buffer, tapPose, aspect, arcRadians, CURVED_SEGMENTS, 0, tapAlpha);
+            } else {
+                RenderUtil.addScreenQuad(buffer, tapPose, aspect, 0, tapAlpha);
             }
-            RenderUtil.addCurvedScreenQuad(buffer, pose, aspect, arcRadians, CURVED_SEGMENTS, lightingTint, ConfigManager.config().screenAlpha);
-            meshQuadCount = (layers + 1) * CURVED_SEGMENTS;
-        } else {
-            int layers = ConfigManager.config().dropShadowEnabled ? ConfigManager.config().dropShadowLayers : 0;
-            for (int i = 0; i < layers; i++) {
-                float offsetX = (float) (ConfigManager.config().dropShadowHorizontalOffset * (1 + i * 0.5));
-                float offsetY = (float) (ConfigManager.config().dropShadowVerticalOffset * (1 + i * 0.5));
-                float offsetZ = (float) -ConfigManager.config().dropShadowDepthOffset;
-                float scale = (float) (1.0 + (ConfigManager.config().dropShadowScaleMultiplier - 1.0) * (i + 1) / layers);
-                Matrix4f layerPose = new Matrix4f(pose).translate(offsetX, offsetY, offsetZ).scale(scale, scale, scale);
-                RenderUtil.addScreenQuad(buffer, layerPose, aspect, 0, ConfigManager.config().dropShadowAlpha / layers);
-            }
-            RenderUtil.addScreenQuad(buffer, pose, aspect, lightingTint, ConfigManager.config().screenAlpha);
-            meshQuadCount = layers + 1;
         }
+
+        if (curved) {
+            RenderUtil.addCurvedScreenQuad(buffer, pose, aspect, arcRadians, CURVED_SEGMENTS, lightingTint, config.screenAlpha);
+        } else {
+            RenderUtil.addScreenQuad(buffer, pose, aspect, lightingTint, config.screenAlpha);
+        }
+        meshQuadCount = (taps + 1) * (curved ? CURVED_SEGMENTS : 1);
     }
 
     //? if >1.21.1 {

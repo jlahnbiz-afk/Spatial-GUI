@@ -263,10 +263,6 @@ public class SpatialGUIRenderer {
         player.setXRot(cameraPitch);
         player.yRotO = cameraYaw;
         player.xRotO = cameraPitch;
-        player.yBob = cameraYaw;
-        player.xBob = cameraPitch;
-        player.yBobO = cameraYaw;
-        player.xBobO = cameraPitch;
     }
 
     private void finishClosing() {
@@ -511,7 +507,7 @@ public class SpatialGUIRenderer {
     public boolean bobSwayActive() {
         return SpatialGUIClient.isEnabled()
                 && SpatialGUIClient.getEffectiveFirstPersonMode()
-                && hookedScreen != null
+                && (hookedScreen != null || isClosingFirstPerson())
                 && !ConfigManager.config().hideHandsInFirstPerson;
     }
 
