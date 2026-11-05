@@ -141,11 +141,11 @@ public class ScreenExtractor {
     }
     *///?}
 
-    public void extractIsolatedScreen(Screen screen, float partialTick, QuadBasis quadBasis, CylinderBasis cylinderBasis, TextureTargetManager targetManager) {
-        extractIsolatedScreen(screen, partialTick, quadBasis, cylinderBasis, targetManager, null);
+    public void extractIsolatedScreen(Screen screen, float partialTick, QuadBasis quadBasis, CylinderBasis cylinderBasis, ScreenTexture screenTexture) {
+        extractIsolatedScreen(screen, partialTick, quadBasis, cylinderBasis, screenTexture, null);
     }
 
-    public void extractIsolatedScreen(Screen screen, float partialTick, QuadBasis quadBasis, CylinderBasis cylinderBasis, TextureTargetManager targetManager, com.llamalad7.mixinextras.injector.wrapoperation.Operation<Void> renderOperation) {
+    public void extractIsolatedScreen(Screen screen, float partialTick, QuadBasis quadBasis, CylinderBasis cylinderBasis, ScreenTexture screenTexture, com.llamalad7.mixinextras.injector.wrapoperation.Operation<Void> renderOperation) {
         ensureScreenGuiRenderer();
         Minecraft mc = Minecraft.getInstance();
         double guiScale = ConfigManager.config().getEffectiveGuiScale();
@@ -175,7 +175,7 @@ public class ScreenExtractor {
         /^ControlifyCompat.renderVirtualMouse(graphics);
         ^///?}
         *///?} else {
-        /*var target = targetManager.getTarget();
+        /*var target = screenTexture.prepareAndGetTarget();
         if (target != null) {
             Window window = mc.getWindow();
             float guiWidth = (float) (window.getWidth() / window.getGuiScale());

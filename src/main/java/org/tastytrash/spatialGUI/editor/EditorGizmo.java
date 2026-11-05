@@ -95,7 +95,7 @@ public final class EditorGizmo {
 
     private static QuadBasis currentBasis() {
         if (!active()) return null;
-        QuadBasis basis = SpatialGUIClient.renderer().getInventoryRenderer().getQuadBasis();
+        QuadBasis basis = SpatialGUIClient.renderer().getWorldScreenRenderer().getQuadBasis();
         return basis != null && basis.halfHeight() > 0f ? basis : null;
     }
 

@@ -75,6 +75,8 @@ However, compatibility isn't guaranteed with every mod. Spatial GUI modifies GUI
 
 If you find a reproducible incompatibility with another mod, please report it on GitHub so it can be investigated. Reporting an issue helps make the mod better for everyone!
 
+Spatial GUI has special compatibility with [Punchy!](https://modrinth.com/mod/punchy-fpa) & [Punchy! Moves](https://modrinth.com/mod/punchymoves)!
+
 **Warning: Lunar Client is not supported.** Lunar Client modifies Minecraft's rendering in ways that are incompatible with Spatial GUI. While it's not completely incompatible and still functions in most cases, issues caused by using Lunar Client will not be addressed.
 
 # FAQ
@@ -91,9 +93,11 @@ If you find a reproducible incompatibility with another mod, please report it on
 ## Notes
 *   Feel free to suggest features or report bugs on the GitHub.
 *   Spatial GUI is welcome in modpacks, no additional permission required. Be aware that compatibility with some mods may vary.
+*   I have plans for a multiplayer addon... no promises yet though, don't expect it soon
 
 ### Special thanks to:
 vibing for all of their GitHub contributions  
+DevPunchyMan & Godku (Punchy Guys Studios) for adding Spatial GUI compatibility in their mods!  
 Dizabanik for tons of code fixes and improvements  
 BUILDLCS for the Brazilian Portuguese translation  
 suheckii for the Russian translation  

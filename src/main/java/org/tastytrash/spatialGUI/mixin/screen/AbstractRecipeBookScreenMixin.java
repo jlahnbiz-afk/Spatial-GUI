@@ -23,7 +23,7 @@ public class AbstractRecipeBookScreenMixin {
     private void spatialGUI$syncRecipeBookOnInit(CallbackInfo ci) {
         var renderer = SpatialGUIClient.renderer();
         if (renderer != null) {
-            renderer.getInventoryRenderer().setRecipeBookOpen(this.recipeBookComponent.isVisible());
+            renderer.getWorldScreenRenderer().setRecipeBookOpen(this.recipeBookComponent.isVisible());
         }
     }
 
@@ -31,7 +31,7 @@ public class AbstractRecipeBookScreenMixin {
     private void spatialGUI$updateIsRecipeBookOpen(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
         var renderer = SpatialGUIClient.renderer();
         if (renderer != null) {
-            renderer.getInventoryRenderer().setRecipeBookOpen(this.recipeBookComponent.isVisible());
+            renderer.getWorldScreenRenderer().setRecipeBookOpen(this.recipeBookComponent.isVisible());
         }
     }
 
@@ -39,7 +39,7 @@ public class AbstractRecipeBookScreenMixin {
     private void spatialGUI$onMouseClicked(MouseButtonEvent event, boolean doubleClick, CallbackInfoReturnable<Boolean> cir) {
         var renderer = SpatialGUIClient.renderer();
         if (renderer != null) {
-            renderer.getInventoryRenderer().setRecipeBookOpen(this.recipeBookComponent.isVisible());
+            renderer.getWorldScreenRenderer().setRecipeBookOpen(this.recipeBookComponent.isVisible());
         }
         if (!this.recipeBookComponent.isVisible()) {
             AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>)(Object) this;
@@ -75,7 +75,7 @@ public class AbstractRecipeBookScreenMixin {
     private void spatialGUI$syncRecipeBookOnInit(CallbackInfo ci) {
         var renderer = SpatialGUIClient.renderer();
         if (renderer != null) {
-            renderer.getInventoryRenderer().setRecipeBookOpen(this.recipeBookComponent.isVisible());
+            renderer.getWorldScreenRenderer().setRecipeBookOpen(this.recipeBookComponent.isVisible());
         }
     }
 
@@ -83,7 +83,7 @@ public class AbstractRecipeBookScreenMixin {
     private void spatialGUI$updateIsRecipeBookOpen(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
         var renderer = SpatialGUIClient.renderer();
         if (renderer != null) {
-            renderer.getInventoryRenderer().setRecipeBookOpen(this.recipeBookComponent.isVisible());
+            renderer.getWorldScreenRenderer().setRecipeBookOpen(this.recipeBookComponent.isVisible());
         }
     }
 
@@ -91,7 +91,7 @@ public class AbstractRecipeBookScreenMixin {
     private void spatialGUI$onMouseClicked(MouseButtonEvent event, boolean doubleClick, CallbackInfoReturnable<Boolean> cir) {
         var renderer = SpatialGUIClient.renderer();
         if (renderer != null) {
-            renderer.getInventoryRenderer().setRecipeBookOpen(this.recipeBookComponent.isVisible());
+            renderer.getWorldScreenRenderer().setRecipeBookOpen(this.recipeBookComponent.isVisible());
         }
         if (!this.recipeBookComponent.isVisible()) {
             AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>)(Object) this;
@@ -126,7 +126,7 @@ public class AbstractRecipeBookScreenMixin {
         var renderer = SpatialGUIClient.renderer();
         if (renderer != null) {
             RecipeUpdateListener listener = (RecipeUpdateListener) (Object) this;
-            renderer.getInventoryRenderer().setRecipeBookOpen(listener.getRecipeBookComponent().isVisible());
+            renderer.getWorldScreenRenderer().setRecipeBookOpen(listener.getRecipeBookComponent().isVisible());
         }
     }
 
@@ -135,7 +135,7 @@ public class AbstractRecipeBookScreenMixin {
         var renderer = SpatialGUIClient.renderer();
         if (renderer != null) {
             RecipeUpdateListener listener = (RecipeUpdateListener) (Object) this;
-            renderer.getInventoryRenderer().setRecipeBookOpen(listener.getRecipeBookComponent().isVisible());
+            renderer.getWorldScreenRenderer().setRecipeBookOpen(listener.getRecipeBookComponent().isVisible());
         }
     }
 
@@ -145,7 +145,7 @@ public class AbstractRecipeBookScreenMixin {
         if (renderer != null) {
             RecipeUpdateListener listener = (RecipeUpdateListener) (Object) this;
             boolean visible = listener.getRecipeBookComponent().isVisible();
-            renderer.getInventoryRenderer().setRecipeBookOpen(visible);
+            renderer.getWorldScreenRenderer().setRecipeBookOpen(visible);
             if (!visible) {
                 AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>)(Object) this;
                 //? if >1.20.1 {

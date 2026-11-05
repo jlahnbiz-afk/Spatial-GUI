@@ -21,8 +21,8 @@ public final class EditorSliderButton extends AbstractSliderButton {
     private boolean dragging;
 
     //? if 1.20.1 {
-//    private static final ResourceLocation SLIDER_TEXTURE = new ResourceLocation("textures/gui/slider.png");
-    //?}
+    /*private static final ResourceLocation SLIDER_TEXTURE = new ResourceLocation("textures/gui/slider.png");
+    *///?}
 
     public EditorSliderButton(int width, int height, Supplier<Component> label, double min, double max, DoubleConsumer onChange) {
         super(0, 0, width, height, Component.empty(), 0);
@@ -69,7 +69,7 @@ public final class EditorSliderButton extends AbstractSliderButton {
 
     //? if 1.20.1 {
     /*@Override
-    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void renderWidget(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         RenderSystem.enableBlend();
         graphics.blitNineSliced(SLIDER_TEXTURE, getX(), getY(), getWidth(), getHeight(), 20, 4, 200, 20, 0, 0);
         graphics.blitNineSliced(SLIDER_TEXTURE, getX() + (int) (value * (getWidth() - 8)), getY(), 8, getHeight(), 20, 4, 200, 20, 0, isHoveredOrFocused() ? 60 : 40);

@@ -49,7 +49,7 @@ public class GuiRendererMixin {
         }
 
         if ((Object) this == renderer.getScreenGuiRenderer()) {
-            return renderer.getTargetManager().getTarget();
+            return renderer.getScreenTexture().prepareAndGetTarget();
         }
 
         return original;

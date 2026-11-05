@@ -47,9 +47,9 @@ public class SpatialGUIRenderer {
     public static Object cursorTarget = null;
     public static boolean renderingLevel = false;
 
-    private final TextureTargetManager targetManager;
+    private final ScreenTexture screenTexture;
     private final ScreenExtractor screenExtractor;
-    private final InventoryRenderer inventoryRenderer;
+    private final WorldScreenRenderer worldScreen;
 
     private Screen hookedScreen;
     private static boolean isInventoryScreen;
@@ -70,9 +70,9 @@ public class SpatialGUIRenderer {
     private float anchoredPitch;
 
     public SpatialGUIRenderer() {
-        this.targetManager = new TextureTargetManager();
+        this.screenTexture = new ScreenTexture();
         this.screenExtractor = new ScreenExtractor();
-        this.inventoryRenderer = new InventoryRenderer(targetManager);
+        this.worldScreen = new WorldScreenRenderer(screenTexture);
 
         //? if neoforge {
         /*NeoForge.EVENT_BUS.addListener(this::onScreenRenderPre);
@@ -111,9 +111,9 @@ public class SpatialGUIRenderer {
         if (screen != client.screen) return;
         //?}
 
-        if (inventoryRenderer.isClosing()) {
+        if (worldScreen.isClosing()) {
             if (swapping) {
-                inventoryRenderer.endClosing();
+                worldScreen.endClosing();
             }
             else finishClosing();
         }
@@ -129,7 +129,7 @@ public class SpatialGUIRenderer {
         if (swapping) {
             poseStarted = prevPoseStarted;
         } else {
-            inventoryRenderer.setScreenOpenTime(System.currentTimeMillis());
+            worldScreen.setScreenOpenTime(System.currentTimeMillis());
         }
 
         var player = client.player;
@@ -148,7 +148,7 @@ public class SpatialGUIRenderer {
         SpatialGUIClient.setEffectiveFirstPersonMode(isFirstPerson);
         MouseHandlerUtil.resetMouseState();
         if (!isFirstPerson) {
-            targetManager.prepareTarget();
+            screenTexture.prepareTarget();
         }
 
         //? if fabric && >=26.1.2 {
@@ -179,7 +179,7 @@ public class SpatialGUIRenderer {
         if (event.getScreen() == hookedScreen) {
             event.setCanceled(true);
             SpatialGUIRenderer.skipWindowOverride = false;
-            screenExtractor.extractIsolatedScreen(hookedScreen, event.getPartialTick(), inventoryRenderer.getQuadBasis(), inventoryRenderer.getCylinderBasis(), targetManager);
+            screenExtractor.extractIsolatedScreen(hookedScreen, event.getPartialTick(), worldScreen.getQuadBasis(), worldScreen.getCylinderBasis(), screenTexture);
             SpatialGUIRenderer.skipWindowOverride = true;
         }
     }
@@ -212,10 +212,10 @@ public class SpatialGUIRenderer {
         boolean startClosing = animate
                 && ConfigManager.config().enableCloseAnimation
                 && Minecraft.getInstance().level != null
-                && inventoryRenderer.beginClosing();
+                && worldScreen.beginClosing();
         if (!startClosing) {
-            inventoryRenderer.resetRecipeBookState();
-            inventoryRenderer.resetPerspectiveState();
+            worldScreen.resetRecipeBookState();
+            worldScreen.resetPerspectiveState();
             releaseRotationAnchor();
         }
         hookedScreen = null;
@@ -270,51 +270,51 @@ public class SpatialGUIRenderer {
     }
 
     private void finishClosing() {
-        if (!inventoryRenderer.isClosing()) return;
-        inventoryRenderer.endClosing();
-        inventoryRenderer.resetRecipeBookState();
-        inventoryRenderer.resetPerspectiveState();
-        targetManager.clearTarget();
+        if (!worldScreen.isClosing()) return;
+        worldScreen.endClosing();
+        worldScreen.resetRecipeBookState();
+        worldScreen.resetPerspectiveState();
+        screenTexture.clearTarget();
         releaseRotationAnchor();
     }
 
     public boolean isClosing() {
-        return inventoryRenderer.isClosing();
+        return worldScreen.isClosing();
     }
 
     public boolean isClosingFirstPerson() {
-        return inventoryRenderer.isClosing() && inventoryRenderer.isClosingFirstPerson();
+        return worldScreen.isClosing() && worldScreen.isClosingFirstPerson();
     }
 
     public boolean isClosingThirdToFirstPerson() {
-        return inventoryRenderer.isClosing()
-                && !inventoryRenderer.isClosingFirstPerson()
+        return worldScreen.isClosing()
+                && !worldScreen.isClosingFirstPerson()
                 && !ConfigManager.config().autoDetectCameraMode
                 && !SpatialGUIClient.getWasThirdPersonCamera();
     }
 
     public boolean isClosingWithCameraTransition() {
-        return inventoryRenderer.isClosing()
-                && (!inventoryRenderer.isClosingFirstPerson() || SpatialGUIClient.getWasThirdPersonCamera());
+        return worldScreen.isClosing()
+                && (!worldScreen.isClosingFirstPerson() || SpatialGUIClient.getWasThirdPersonCamera());
     }
 
     public long getCloseElapsedMs() {
-        return inventoryRenderer.getCloseElapsedMs();
+        return worldScreen.getCloseElapsedMs();
     }
 
     public float getCloseBlend() {
         float duration = Math.max(1, ConfigManager.config().transitionDurationMs);
         float skipFraction = ConfigManager.config().transitionSkipPercentage / 100.0f;
-        float openProgress = Math.max(skipFraction, 1.0f - inventoryRenderer.getCloseElapsedMs() / duration);
+        float openProgress = Math.max(skipFraction, 1.0f - worldScreen.getCloseElapsedMs() / duration);
         return 1.0f - org.tastytrash.spatialGUI.util.AnimationUtil.easeInOutSine(openProgress);
     }
 
     public void clearTarget() {
-        targetManager.clearTarget();
+        screenTexture.clearTarget();
     }
 
     public void prepareTarget() {
-        targetManager.prepareTarget();
+        screenTexture.prepareTarget();
     }
 
     public void updateMousePosition() {
@@ -338,7 +338,7 @@ public class SpatialGUIRenderer {
 
     public Vector2d updateMousePosition(double sourceX, double sourceY) {
         Minecraft client = Minecraft.getInstance();
-        RenderUtil.QuadBasis quadBasis = inventoryRenderer.getQuadBasis();
+        RenderUtil.QuadBasis quadBasis = worldScreen.getQuadBasis();
         if (quadBasis == null) {
             return null;
         }
@@ -350,7 +350,7 @@ public class SpatialGUIRenderer {
 
         double guiScale = ConfigManager.config().getEffectiveGuiScale();
         Vector2d mappedMouse = MouseHandlerUtil.mapMousePosition(
-                sourceX, sourceY, quadBasis, inventoryRenderer.getCylinderBasis(), guiScale
+                sourceX, sourceY, quadBasis, worldScreen.getCylinderBasis(), guiScale
         );
 
         if (mappedMouse == null) {
@@ -416,12 +416,12 @@ public class SpatialGUIRenderer {
         return hookedScreen;
     }
 
-    public TextureTargetManager getTargetManager() {
-        return targetManager;
+    public ScreenTexture getScreenTexture() {
+        return screenTexture;
     }
 
-    public InventoryRenderer getInventoryRenderer() {
-        return inventoryRenderer;
+    public WorldScreenRenderer getWorldScreenRenderer() {
+        return worldScreen;
     }
 
     public static boolean isCrosshairModeActive() {
@@ -433,26 +433,26 @@ public class SpatialGUIRenderer {
     }
 
     public void renderInWorld(com.mojang.blaze3d.vertex.PoseStack matrices) {
-        inventoryRenderer.renderInWorld(matrices);
+        worldScreen.renderInWorld(matrices);
     }
 
     //? if >1.21.1 {
     public void capturePerspectiveState(GpuBufferSlice buffer, com.mojang.blaze3d.ProjectionType type, com.mojang.blaze3d.vertex.PoseStack poseStack) {
-        inventoryRenderer.capturePerspectiveState(buffer, type, poseStack);
+        worldScreen.capturePerspectiveState(buffer, type, poseStack);
     }
     //?} else {
     /*public void capturePerspectiveState(org.joml.Matrix4f projectionMatrix, com.mojang.blaze3d.vertex.VertexSorting vertexSorting, com.mojang.blaze3d.vertex.PoseStack poseStack) {
-        inventoryRenderer.capturePerspectiveState(projectionMatrix, vertexSorting, poseStack);
+        worldScreen.capturePerspectiveState(projectionMatrix, vertexSorting, poseStack);
     }
     *///?}
 
     public void renderInWorldPost() {
-        inventoryRenderer.renderInWorldPost();
+        worldScreen.renderInWorldPost();
     }
 
     public void onFrameStart() {
         GuiScaleUtil.pendingScreen = null;
-        inventoryRenderer.onFrameStart();
+        worldScreen.onFrameStart();
     }
 
     public void updateFrame() {
@@ -464,7 +464,7 @@ public class SpatialGUIRenderer {
         Screen screen = mc.screen;
         //?}
         if (hookedScreen != null && screen != hookedScreen) onScreenRemoved();
-        if (inventoryRenderer.isClosing() && (mc.level == null || inventoryRenderer.isCloseFinished())) {
+        if (worldScreen.isClosing() && (mc.level == null || worldScreen.isCloseFinished())) {
             finishClosing();
         }
         MouseHandlerUtil.syncCursorGrab();
@@ -546,11 +546,11 @@ public class SpatialGUIRenderer {
     *///?}
 
     public GpuBufferSlice getCapturedProjectionBuffer() {
-        return inventoryRenderer.getCapturedProjectionBuffer();
+        return worldScreen.getCapturedProjectionBuffer();
     }
 
     public com.mojang.blaze3d.ProjectionType getCapturedProjectionType() {
-        return inventoryRenderer.getCapturedProjectionType();
+        return worldScreen.getCapturedProjectionType();
     }
     //?}
 
@@ -565,11 +565,11 @@ public class SpatialGUIRenderer {
     *///?}
 
     public void extractIsolatedScreen(Screen screen, float partialTick) {
-        screenExtractor.extractIsolatedScreen(screen, partialTick, inventoryRenderer.getQuadBasis(), inventoryRenderer.getCylinderBasis(), targetManager);
+        screenExtractor.extractIsolatedScreen(screen, partialTick, worldScreen.getQuadBasis(), worldScreen.getCylinderBasis(), screenTexture);
     }
 
     public void extractIsolatedScreen(Screen screen, float partialTick, com.llamalad7.mixinextras.injector.wrapoperation.Operation<Void> operation) {
-        screenExtractor.extractIsolatedScreen(screen, partialTick, inventoryRenderer.getQuadBasis(), inventoryRenderer.getCylinderBasis(), targetManager, operation);
+        screenExtractor.extractIsolatedScreen(screen, partialTick, worldScreen.getQuadBasis(), worldScreen.getCylinderBasis(), screenTexture, operation);
     }
 
     public float anchoredYaw() {
@@ -592,6 +592,11 @@ public class SpatialGUIRenderer {
         if (hookedScreen == null) return false;
         return RenderUtil.isMouseOver(
                 MouseHandlerUtil.getSourceX(), MouseHandlerUtil.getSourceY(),
-                inventoryRenderer.getQuadBasis(), inventoryRenderer.getCylinderBasis());
+                worldScreen.getQuadBasis(), worldScreen.getCylinderBasis());
+    }
+
+    public boolean shouldDeferPlayer() {
+        return SpatialGUIClient.isEnabled() && ConfigManager.config().renderPlayerInFront
+                && (shouldCapture() ? !SpatialGUIClient.getEffectiveFirstPersonMode() : isClosing() && !isClosingFirstPerson());
     }
 }

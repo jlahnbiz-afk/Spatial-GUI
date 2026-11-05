@@ -14,21 +14,21 @@ import org.joml.Vector4f;
 import com.mojang.blaze3d.GpuFormat;
 *///?}
 
-public class TextureTargetManager {
-    private TextureTarget inventoryTarget;
+public class ScreenTexture {
+    private TextureTarget target;
 
     public void clearTarget() {
-        if (inventoryTarget == null) {
+        if (target == null) {
             return;
         }
 
         //? if <1.21.11 {
-        /*inventoryTarget.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
-        inventoryTarget.clear(Minecraft.ON_OSX);
+        /*target.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
+        target.clear(Minecraft.ON_OSX);
         Minecraft.getInstance().getMainRenderTarget().bindWrite(true);
         *///?} else {
-        var colorTexture = inventoryTarget.getColorTexture();
-        var depthTexture = inventoryTarget.getDepthTexture();
+        var colorTexture = target.getColorTexture();
+        var depthTexture = target.getDepthTexture();
 
         if (colorTexture == null) {
             return;
@@ -63,12 +63,12 @@ public class TextureTargetManager {
         int width = Math.max(1, (int) Math.round(windowWidth * scale));
         int height = Math.max(1, (int) Math.round(windowHeight * scale));
 
-        if (inventoryTarget == null) {
+        if (target == null) {
             //? if <1.21.11 {
-            /*inventoryTarget = new TextureTarget(width, height, true, Minecraft.ON_OSX);
+            /*target = new TextureTarget(width, height, true, Minecraft.ON_OSX);
             *///?} else {
-            inventoryTarget = new TextureTarget(
-                    "Spatial GUI Inventory",
+            target = new TextureTarget(
+                    "Spatial GUI Screen",
                     width,
                     height,
                     //? if >26.2 {
@@ -86,22 +86,22 @@ public class TextureTargetManager {
             return;
         }
 
-        if (inventoryTarget.width != width || inventoryTarget.height != height) {
+        if (target.width != width || target.height != height) {
             //? if <1.21.11 {
-            /*inventoryTarget.resize(width, height, Minecraft.ON_OSX);
+            /*target.resize(width, height, Minecraft.ON_OSX);
             *///?} else {
-            inventoryTarget.resize(width, height);
+            target.resize(width, height);
             clearTarget();
              //?}
         }
     }
 
-    public TextureTarget getTarget() {
+    public TextureTarget prepareAndGetTarget() {
         prepareTarget();
-        return inventoryTarget;
+        return target;
     }
 
-    public TextureTarget getInventoryTarget() {
-        return inventoryTarget;
+    public TextureTarget getTarget() {
+        return target;
     }
 }

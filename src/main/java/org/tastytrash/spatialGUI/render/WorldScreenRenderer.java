@@ -67,32 +67,33 @@ import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.util.AnimationUtil;
 import org.tastytrash.spatialGUI.util.RenderUtil;
 
-public class InventoryRenderer {
+public class WorldScreenRenderer {
     private static final PoseStack WORLD_POSE_STACK = new PoseStack();
     //? if >1.21.1 {
-    private static final RenderPipeline INVENTORY_PIPELINE = RenderPipelines.GUI_TEXTURED;
+    private static final RenderPipeline SCREEN_PIPELINE = RenderPipelines.GUI_TEXTURED;
     private static final RenderPipeline OVERLAY_PIPELINE = RenderPipelines.GUI;
     private static final org.joml.Vector3f ZERO_VECTOR = new org.joml.Vector3f();
     private static final Matrix4f IDENTITY_MATRIX = new Matrix4f();
     private static final org.joml.Vector4f COLOR_MODULATOR = new org.joml.Vector4f();
     //?}
     //? if >1.21.1 && <26.2 {
-    private static final ByteBufferBuilder INVENTORY_BYTE_BUFFER = new ByteBufferBuilder(RenderType.SMALL_BUFFER_SIZE);
+    private static final ByteBufferBuilder SCREEN_BYTE_BUFFER = new ByteBufferBuilder(RenderType.SMALL_BUFFER_SIZE);
     //?}
     //? if >=26.2 {
-    /*private static final StagedVertexBuffer INVENTORY_BUFFER = new StagedVertexBuffer(
-            () -> "Spatial GUI Inventory Buffer",
+    /*private static final StagedVertexBuffer SCREEN_BUFFER = new StagedVertexBuffer(
+            () -> "Spatial GUI Screen Buffer",
             RenderType.SMALL_BUFFER_SIZE
     );
     *///?}
 
-    private final TextureTargetManager targetManager;
+    private final ScreenTexture screenTexture;
     private QuadBasis quadBasis;
     private CylinderBasis cylinderBasis;
     private long basisFrame = -1;
     private int meshQuadCount = 1;
     private static final int CURVED_SEGMENTS = 32;
     private long screenOpenTime = 0;
+    private float passAlpha = 1f;
     private static boolean isRecipeBookOpen = false;
     private static int recipeBookCloseDelay = 0;
 
@@ -117,8 +118,8 @@ public class InventoryRenderer {
 
     private float smoothedLight = -1f;
 
-    public InventoryRenderer(TextureTargetManager targetManager) {
-        this.targetManager = targetManager;
+    public WorldScreenRenderer(ScreenTexture screenTexture) {
+        this.screenTexture = screenTexture;
     }
 
     private int computeLightingTint() {
@@ -174,7 +175,7 @@ public class InventoryRenderer {
         RenderUtil.applyScreenTransform(WORLD_POSE_STACK, isFirstPerson, yawRadians, pitchRadians, config, lookX, lookY, lookZ);
         WORLD_POSE_STACK.scale(scale, scale, scale);
 
-        var target = targetManager.getInventoryTarget();
+        var target = screenTexture.getTarget();
         float aspect = target != null && target.height > 0
                 ? (float) target.width / (float) target.height
                 : 1.0f;
@@ -259,6 +260,10 @@ public class InventoryRenderer {
         return capturedProjectionBuffer;
     }
 
+    public PoseStack getCapturedPoseStack() {
+        return capturedPoseStack;
+    }
+
     public com.mojang.blaze3d.ProjectionType getCapturedProjectionType() {
         return capturedProjectionType;
     }
@@ -277,6 +282,73 @@ public class InventoryRenderer {
     }
     *///?}
 
+    //? if <=1.21.1 {
+    /*private net.minecraft.client.player.AbstractClientPlayer deferredPlayer;
+    private double deferredX, deferredY, deferredZ;
+    private float deferredYaw, deferredPartialTick;
+    private int deferredLight;
+    private boolean drawingDeferredPlayer;
+
+    public boolean isDrawingDeferredPlayer() {
+        return drawingDeferredPlayer;
+    }
+
+    public boolean hasDeferredPlayer() {
+        return deferredPlayer != null;
+    }
+
+    public void deferPlayer(net.minecraft.client.player.AbstractClientPlayer player, double x, double y, double z, float yaw, float partialTick, int light) {
+        this.deferredPlayer = player;
+        this.deferredX = x;
+        this.deferredY = y;
+        this.deferredZ = z;
+        this.deferredYaw = yaw;
+        this.deferredPartialTick = partialTick;
+        this.deferredLight = light;
+    }
+
+    public void renderDeferredPlayer() {
+        var player = this.deferredPlayer;
+        this.deferredPlayer = null;
+        Minecraft client = Minecraft.getInstance();
+        if (player == null || !hasCapturedPerspective || client.level == null) {
+            return;
+        }
+
+        Matrix4f prevProjection = RenderSystem.getProjectionMatrix();
+        VertexSorting prevSorting = RenderSystem.getVertexSorting();
+        var modelView = RenderSystem.getModelViewStack();
+        boolean prevRenderingLevel = SpatialGUIRenderer.renderingLevel;
+
+        PoseStack poseStack = new PoseStack();
+        poseStack.last().pose().set(capturedPoseStack.last().pose());
+        poseStack.last().normal().set(capturedPoseStack.last().normal());
+
+        modelView.pushMatrix();
+        try {
+            //? if >1.20.1 {
+            modelView.identity();
+            //?} else {
+            /^modelView.setIdentity();
+            ^///?}
+            RenderSystem.applyModelViewMatrix();
+            RenderSystem.setProjectionMatrix(capturedProjectionMatrix, capturedVertexSorting);
+            SpatialGUIRenderer.renderingLevel = true;
+            drawingDeferredPlayer = true;
+
+            var bufferSource = client.renderBuffers().bufferSource();
+            client.getEntityRenderDispatcher().render(player, deferredX, deferredY, deferredZ, deferredYaw, deferredPartialTick, poseStack, bufferSource, deferredLight);
+            bufferSource.endBatch();
+        } finally {
+            drawingDeferredPlayer = false;
+            SpatialGUIRenderer.renderingLevel = prevRenderingLevel;
+            modelView.popMatrix();
+            RenderSystem.applyModelViewMatrix();
+            RenderSystem.setProjectionMatrix(prevProjection, prevSorting);
+        }
+    }
+    *///?}
+
     private static long animationTotalMs() {
         long total = 0;
         if (ConfigManager.config().enableFadeAnimation) total = Math.max(total, ConfigManager.config().fadeDurationMs);
@@ -286,7 +358,7 @@ public class InventoryRenderer {
 
     public boolean beginClosing() {
         var player = Minecraft.getInstance().player;
-        if (!hasCapturedPerspective || player == null || targetManager.getInventoryTarget() == null) {
+        if (!hasCapturedPerspective || player == null || screenTexture.getTarget() == null) {
             return false;
         }
         long now = System.currentTimeMillis();
@@ -384,7 +456,7 @@ public class InventoryRenderer {
     }
 
     private boolean hasTexture() {
-        RenderTarget target = targetManager.getInventoryTarget();
+        RenderTarget target = screenTexture.getTarget();
         if (target == null) {
             return false;
         }
@@ -402,7 +474,7 @@ public class InventoryRenderer {
             return;
         }
 
-        RenderTarget target = targetManager.getInventoryTarget();
+        RenderTarget target = screenTexture.getTarget();
         //? if >1.21.1 {
         var texture = target.getColorTextureView();
         //?} else {
@@ -410,18 +482,18 @@ public class InventoryRenderer {
          *///?}
 
         //? if >=26.2 {
-        /*VertexFormat format = INVENTORY_PIPELINE.getVertexFormatBinding(0);
+        /*VertexFormat format = SCREEN_PIPELINE.getVertexFormatBinding(0);
         if (format == null) {
             return;
         }
 
-        StagedVertexBuffer.Draw draw = INVENTORY_BUFFER.appendDraw(format, INVENTORY_PIPELINE.getPrimitiveTopology(), null);
-        StagedVertexBuffer.Draw overlayDraw = EditorGizmo.active()
-                ? INVENTORY_BUFFER.appendDraw(OVERLAY_PIPELINE.getVertexFormatBinding(0), OVERLAY_PIPELINE.getPrimitiveTopology(), null)
+        StagedVertexBuffer.Draw draw = SCREEN_BUFFER.appendDraw(format, SCREEN_PIPELINE.getPrimitiveTopology(), null);
+        StagedVertexBuffer.Draw overlayDraw = EditorGizmo.active() && passAlpha == 1f
+                ? SCREEN_BUFFER.appendDraw(OVERLAY_PIPELINE.getVertexFormatBinding(0), OVERLAY_PIPELINE.getPrimitiveTopology(), null)
                 : null;
-        VertexConsumer buffer = INVENTORY_BUFFER.getVertexBuilder(draw);
+        VertexConsumer buffer = SCREEN_BUFFER.getVertexBuilder(draw);
         *///?} else if >1.21.1 {
-        BufferBuilder buffer = new BufferBuilder(INVENTORY_BYTE_BUFFER, VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        BufferBuilder buffer = new BufferBuilder(SCREEN_BYTE_BUFFER, VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
         //?} else if 1.21.1 {
         /*BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
          *///?} else {
@@ -442,38 +514,38 @@ public class InventoryRenderer {
 
         //? if >=26.2 {
         /*if (overlayDraw != null) {
-            EditorGizmo.addHandles(INVENTORY_BUFFER.getVertexBuilder(overlayDraw), pose, screenPose.aspect());
+            EditorGizmo.addHandles(SCREEN_BUFFER.getVertexBuilder(overlayDraw), pose, screenPose.aspect());
         }
         *///?} else {
-        Matrix4f handlePose = EditorGizmo.active() ? new Matrix4f(pose) : null;
+        Matrix4f handlePose = EditorGizmo.active() && passAlpha == 1f ? new Matrix4f(pose) : null;
         //?}
 
         matrices.popPose();
 
         //? if >=26.2 {
-        /*INVENTORY_BUFFER.upload();
-        StagedVertexBuffer.ExecuteInfo info = INVENTORY_BUFFER.getExecuteInfo(draw);
+        /*SCREEN_BUFFER.upload();
+        StagedVertexBuffer.ExecuteInfo info = SCREEN_BUFFER.getExecuteInfo(draw);
         if (info != null) {
-            drawInventory(info, texture);
+            drawScreenMesh(info, texture);
             if (overlayDraw != null) {
-                StagedVertexBuffer.ExecuteInfo overlayInfo = INVENTORY_BUFFER.getExecuteInfo(overlayDraw);
+                StagedVertexBuffer.ExecuteInfo overlayInfo = SCREEN_BUFFER.getExecuteInfo(overlayDraw);
                 if (overlayInfo != null) {
                     drawOverlay(overlayInfo);
                 }
             }
         }
-        INVENTORY_BUFFER.endFrame();
+        SCREEN_BUFFER.endFrame();
         *///?} else if >1.21.1 {
         MeshData meshData = buffer.build();
         if (meshData != null) {
             try (meshData) {
-                drawInventory(meshData, texture);
+                drawScreenMesh(meshData, texture);
             }
         }
         //?} else if 1.21.1 {
-        /*drawInventory(buffer.buildOrThrow(), texture);
+        /*drawScreenMesh(buffer.buildOrThrow(), texture);
          *///?} else {
-        /*drawInventory(buffer.end(), texture);
+        /*drawScreenMesh(buffer.end(), texture);
          *///?}
 
         //? if <26.2 {
@@ -490,7 +562,24 @@ public class InventoryRenderer {
         }
 
         hasDrawnThisFrame = true;
+        drawQuadPass();
+    }
 
+    public void renderScreenOverPlayer() {
+        float alpha = Math.min(ConfigManager.config().screenOverPlayerAlpha / 255.0f, 0.999f);
+        if (alpha <= 0f || !hasCapturedPerspective || !hasDrawnThisFrame || !hasTexture() || getFadeAlpha() < 1f) {
+            return;
+        }
+
+        passAlpha = alpha;
+        try {
+            drawQuadPass();
+        } finally {
+            passAlpha = 1f;
+        }
+    }
+
+    private void drawQuadPass() {
         //? if >1.21.1 {
         var prevBuffer = RenderSystem.getProjectionMatrixBuffer();
         var prevType = RenderSystem.getProjectionType();
@@ -530,8 +619,16 @@ public class InventoryRenderer {
     }
 
     //? if >1.21.1 {
-    private GpuBufferSlice writeTransforms(float modulate) {
-        COLOR_MODULATOR.set(modulate, modulate, modulate, modulate);
+    private GpuBufferSlice screenOpacity() {
+        return passAlpha == 1f ? writeTransforms(getFadeAlpha()) : writeTransforms(1f, passAlpha);
+    }
+
+    private GpuBufferSlice  writeTransforms(float modulate) {
+        return writeTransforms(modulate, modulate);
+    }
+
+    private GpuBufferSlice writeTransforms(float color, float alpha) {
+        COLOR_MODULATOR.set(color, color, color, alpha);
         return RenderSystem.getDynamicUniforms().writeTransform(
                 IDENTITY_MATRIX,
                 COLOR_MODULATOR,
@@ -546,13 +643,13 @@ public class InventoryRenderer {
     //?}
 
     //? if >=26.2 {
-    /*private void drawInventory(StagedVertexBuffer.ExecuteInfo info, GpuTextureView texture) {
+    /*private void drawScreenMesh(StagedVertexBuffer.ExecuteInfo info, GpuTextureView texture) {
         var output = Minecraft.getInstance().gameRenderer.mainRenderTarget().getColorTextureView();
         if (output == null) {
             return;
         }
 
-        GpuBufferSlice dynamicTransforms = writeTransforms(getFadeAlpha());
+        GpuBufferSlice dynamicTransforms = screenOpacity();
         FilterMode filterMode = filterMode();
 
         try (var renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(
@@ -563,9 +660,9 @@ public class InventoryRenderer {
                 java.util.OptionalDouble.empty()
         )) {
             //? if >26.2 {
-            /^renderPass.setPipeline(RenderSystem.getCompiledPipeline(INVENTORY_PIPELINE));
+            /^renderPass.setPipeline(RenderSystem.getCompiledPipeline(SCREEN_PIPELINE));
             ^///?} else {
-            renderPass.setPipeline(InventoryRenderer.INVENTORY_PIPELINE);
+            renderPass.setPipeline(SCREEN_PIPELINE);
             //?}
             RenderSystem.bindDefaultUniforms(renderPass);
             renderPass.setUniform("DynamicTransforms", dynamicTransforms);
@@ -613,14 +710,14 @@ public class InventoryRenderer {
         }
     }
     *///?} else if >1.21.1 {
-    private void drawInventory(MeshData meshData, GpuTextureView texture) {
+    private void drawScreenMesh(MeshData meshData, GpuTextureView texture) {
         RenderTarget mainTarget = Minecraft.getInstance().getMainRenderTarget();
         var output = mainTarget.getColorTextureView();
         if (output == null) {
             return;
         }
 
-        GpuBufferSlice dynamicTransforms = writeTransforms(getFadeAlpha());
+        GpuBufferSlice dynamicTransforms = screenOpacity();
         FilterMode filterMode = filterMode();
 
         var sequentialBuffer = RenderSystem.getSequentialBuffer(VertexFormat.Mode.QUADS);
@@ -636,10 +733,10 @@ public class InventoryRenderer {
                     () -> "Spatial GUI",
                     output,
                     java.util.OptionalInt.empty(),
-                    mainTarget.getDepthTextureView(),
+                    null,
                     java.util.OptionalDouble.empty()
             )) {
-                renderPass.setPipeline(InventoryRenderer.INVENTORY_PIPELINE);
+                renderPass.setPipeline(WorldScreenRenderer.SCREEN_PIPELINE);
                 RenderSystem.bindDefaultUniforms(renderPass);
                 renderPass.setUniform("DynamicTransforms", dynamicTransforms);
                 renderPass.bindTexture("Sampler0", texture, RenderSystem.getSamplerCache().getSampler(
@@ -661,7 +758,7 @@ public class InventoryRenderer {
             return;
         }
 
-        BufferBuilder buffer = new BufferBuilder(INVENTORY_BYTE_BUFFER, VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder buffer = new BufferBuilder(SCREEN_BYTE_BUFFER, VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         EditorGizmo.addHandles(buffer, pose, aspect);
         MeshData meshData = buffer.build();
         if (meshData == null) {
@@ -682,7 +779,7 @@ public class InventoryRenderer {
                     () -> "Spatial GUI Handles",
                     output,
                     java.util.OptionalInt.empty(),
-                    mainTarget.getDepthTextureView(),
+                    null,
                     java.util.OptionalDouble.empty()
             )) {
                 renderPass.setPipeline(OVERLAY_PIPELINE);
@@ -696,30 +793,32 @@ public class InventoryRenderer {
     }
     //?} else {
     /*//? if 1.21.1 {
-    /^private void drawInventory(MeshData mesh, int textureId) {
+    /^private void drawScreenMesh(MeshData mesh, int textureId) {
     ^///?} else {
-    private void drawInventory(BufferBuilder.RenderedBuffer mesh, int textureId) {
+    private void drawScreenMesh(BufferBuilder.RenderedBuffer mesh, int textureId) {
     //?}
-        float fadeAlpha = getFadeAlpha();
+        float color = passAlpha == 1f ? getFadeAlpha() : 1f;
+        float alpha = passAlpha == 1f ? color : passAlpha;
         int filter = ConfigManager.config().useLinearFiltering ? GL11.GL_LINEAR : GL11.GL_NEAREST;
 
         Minecraft.getInstance().getMainRenderTarget().bindWrite(true);
 
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         RenderSystem.setShaderTexture(0, textureId);
-        targetManager.getInventoryTarget().setFilterMode(filter);
+        screenTexture.getTarget().setFilterMode(filter);
 
-        RenderSystem.setShaderColor(fadeAlpha, fadeAlpha, fadeAlpha, fadeAlpha);
+        RenderSystem.setShaderColor(color, color, color, alpha);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableCull();
         RenderSystem.enableDepthTest();
         RenderSystem.depthFunc(GL11.GL_ALWAYS);
-        RenderSystem.depthMask(true);
+        RenderSystem.depthMask(false);
 
         try {
             BufferUploader.drawWithShader(mesh);
         } finally {
+            RenderSystem.depthMask(true);
             RenderSystem.depthFunc(GL11.GL_LEQUAL);
             RenderSystem.enableCull();
             RenderSystem.disableBlend();

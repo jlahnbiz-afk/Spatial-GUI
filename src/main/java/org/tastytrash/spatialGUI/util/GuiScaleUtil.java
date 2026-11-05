@@ -1,9 +1,9 @@
 package org.tastytrash.spatialGUI.util;
 
-import org.tastytrash.spatialGUI.config.ConfigManager;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.util.Mth;
+import org.tastytrash.spatialGUI.config.ConfigManager;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 
 public final class GuiScaleUtil {

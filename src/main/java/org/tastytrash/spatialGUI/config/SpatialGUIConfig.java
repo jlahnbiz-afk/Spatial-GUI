@@ -255,6 +255,16 @@ public class SpatialGUIConfig {
     @IntSlider(min = 0, max = 255, step = 1)
     public int screenAlpha = 255;
 
+    @SerialEntry
+    @AutoGen(category = "appearance", group = "texture")
+    @TickBox
+    public boolean renderPlayerInFront = true;
+
+    @SerialEntry
+    @AutoGen(category = "appearance", group = "texture")
+    @IntSlider(min = 0, max = 255, step = 1)
+    public int screenOverPlayerAlpha = 50;
+
     //? if >=26.1.2 {
     @MasterTickBox(value = {"worldBlurStrength"})
     @SerialEntry

@@ -45,7 +45,16 @@ public class WorldBlurRenderer {
         deferredPlayerRenderState = state;
     }
 }
-//?} else {
+//?} else if 1.21.11 {
+/*import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.state.CameraRenderState;
+
+public class WorldBlurRenderer {
+    public static EntityRenderState deferredPlayerState;
+    public static CameraRenderState deferredPlayerCamera;
+    public static double deferredPlayerX, deferredPlayerY, deferredPlayerZ;
+    public static boolean drawingDeferredPlayer;
+}*///?} else {
 /*public class WorldBlurRenderer {
 }
 *///?}

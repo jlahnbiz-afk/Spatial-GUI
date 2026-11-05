@@ -47,7 +47,7 @@ public final class SpatialGUIAPI {
 
     // Returns true if a screen is currently opening (playing opening animation)
     public static boolean isOpeningScreen() {
-        return renderer() != null && renderer().getInventoryRenderer().isOpening();
+        return renderer() != null && renderer().getWorldScreenRenderer().isOpening();
     }
 
     // Returns true if a screen is currently closing (playing closing animation)

@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.gui.Gui;
 import org.spongepowered.asm.mixin.Mixin;
 import org.tastytrash.spatialGUI.config.ConfigManager;
+import org.tastytrash.spatialGUI.util.GuiScaleUtil;
 
 //? if >=1.21.11 {
 import net.minecraft.client.DeltaTracker;
@@ -27,6 +28,7 @@ public class GuiMixin {
 
     @Inject(method = "extractRenderState", at = @At("HEAD"))
     private void spatialGUI$beginExtract(CallbackInfo ci) {
+        GuiScaleUtil.pendingScreen = null;
         SpatialGUIRenderer.skipWindowOverride = true;
     }
 
@@ -94,6 +96,7 @@ public class GuiMixin {
     //?} else {
     /^private void spatialGUI$beginGuiRender(GuiGraphicsExtractor guiGraphics, float partialTick, CallbackInfo ci) {
     ^///?}
+        GuiScaleUtil.pendingScreen = null;
         SpatialGUIRenderer.skipWindowOverride = true;
     }
 
