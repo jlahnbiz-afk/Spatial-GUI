@@ -28,7 +28,11 @@ public class AbstractRecipeBookScreenMixin {
     }
 
     @Inject(method = "extractRenderState", at = @At("HEAD"))
+    //? if <26.4 {
     private void spatialGUI$updateIsRecipeBookOpen(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
+    //?} else {
+    /*private void spatialGUI$updateIsRecipeBookOpen(GuiGraphicsExtractor graphics, CallbackInfo ci) {
+    *///?}
         var renderer = SpatialGUIClient.renderer();
         if (renderer != null) {
             renderer.getWorldScreenRenderer().setRecipeBookOpen(this.recipeBookComponent.isVisible());

@@ -219,6 +219,15 @@ public class SpatialGUIClient {
         return renderer;
     }
 
+    public static void clearTarget() {
+        if (!SpatialGUIAPI.isActive()) {
+            return;
+        }
+        var client = Minecraft.getInstance();
+        client.hitResult = net.minecraft.world.phys.BlockHitResult.miss(Vec3.ZERO, net.minecraft.core.Direction.UP, net.minecraft.core.BlockPos.ZERO);
+        client.crosshairPickEntity = null;
+    }
+
     public static boolean getEffectiveFirstPersonMode() {
         return effectiveFirstPersonMode;
     }

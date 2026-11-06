@@ -39,6 +39,10 @@ stonecutter parameters {
             )
         }
 
+        string(current.parsed > "26.3") {
+            replace("Mth.clamp", "Math.clamp")
+        }
+
         regex(current.parsed <= "1.21.11") {
             replace(
                 "\\bGuiGraphicsExtractor\\b", "GuiGraphics",

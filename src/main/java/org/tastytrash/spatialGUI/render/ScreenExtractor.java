@@ -164,7 +164,11 @@ public class ScreenExtractor {
         SpatialGUIRenderer.isExtractingScreen = true;
         //? if >=26.1.2 {
         GuiGraphicsExtractor graphics = new GuiGraphicsExtractor(mc, screenRenderState, mouseX, mouseY);
+        //? if >=26.4 {
+        /*screen.extractRenderStateWithTooltipAndSubtitles(graphics);
+        *///?} else {
         screen.extractRenderStateWithTooltipAndSubtitles(graphics, mouseX, mouseY, partialTick);
+        //?}
         //? if neoforge {
         /*ControlifyCompat.renderVirtualMouse(graphics);
          *///?}

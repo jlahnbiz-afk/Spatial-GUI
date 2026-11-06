@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.config.ConfigManager;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Minecraft.class)
 //?} else {
@@ -31,6 +32,11 @@ public class MinecraftMixin {
             return true;
         }
         return original;
+    }
+
+    @Inject(method = "pick", at = @At("TAIL"))
+    private void spatialGUI$clearTargetWhileInGui(float partialTicks, CallbackInfo ci) {
+        SpatialGUIClient.clearTarget();
     }
     //?}
 

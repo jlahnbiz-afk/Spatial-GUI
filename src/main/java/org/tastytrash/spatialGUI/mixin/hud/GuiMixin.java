@@ -48,7 +48,11 @@ public class GuiMixin {
     //? if fabric && >=26.2 {
     /*@ModifyArg(method = "extractRenderState", at = @At(
             value = "INVOKE",
+            //? if >26.3 {
+            /^target = "Lnet/minecraft/client/gui/screens/Screen;extractRenderStateWithTooltipAndSubtitles(Lnet/minecraft/client/gui/GuiGraphicsExtractor;)V"
+            ^///?} else {
             target = "Lnet/minecraft/client/gui/screens/Screen;extractRenderStateWithTooltipAndSubtitles(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIF)V"
+            //?}
     ), index = 0)
     private GuiGraphicsExtractor spatialGUI$extractScreenIntoIsolatedState(GuiGraphicsExtractor graphics) {
         var renderer = SpatialGUIClient.renderer();
@@ -63,7 +67,11 @@ public class GuiMixin {
 
     @Inject(method = "extractRenderState", at = @At(
             value = "INVOKE",
+            //? if >26.3 {
+            /^target = "Lnet/minecraft/client/gui/screens/Screen;extractRenderStateWithTooltipAndSubtitles(Lnet/minecraft/client/gui/GuiGraphicsExtractor;)V",
+            ^///?} else {
             target = "Lnet/minecraft/client/gui/screens/Screen;extractRenderStateWithTooltipAndSubtitles(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIF)V",
+            //?}
             shift = At.Shift.AFTER
     ))
     private void spatialGUI$afterScreenExtraction(CallbackInfo ci) {

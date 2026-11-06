@@ -4,6 +4,14 @@ __________ FIXES _________________
 
 Sort config appearance tab
 
+Shadow appears when it shouldn't, like on ice
+
+Body submerged in water disappears
+
+Shaders in 26.4
+
+Something is up with tooltips in 26.4 (Mojang's fault)
+
 Compat:
  - Real Camera (#25) (May not be possible)
  - Item Zoomer (Forge 1.20.1 w/ JEI)
@@ -17,9 +25,6 @@ Change third person default config
 
 In-game warning to recommend turning on override GUI scale while a
   recipe viewer is installed, and your GUI scale is 2 or less
-
-Minecraft's water effects not applying properly when in the menu with velocity underwater (is this solvable?)
-^^^ potentially fixed in 26.4-snapshot-6?
 
 __________ SUGGESTIONS/FEATURES _________________
 ================================================

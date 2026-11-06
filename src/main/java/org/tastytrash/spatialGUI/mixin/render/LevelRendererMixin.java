@@ -25,16 +25,17 @@ public class LevelRendererMixin {
     /*@Inject(method = "render", at = @At("HEAD"))
      *///?} else {
     @Inject(method = "renderLevel", at = @At("HEAD"))
-            //?}
+    //?}
     private void spatialGUI$levelRenderStart(CallbackInfo ci) {
         SpatialGUIRenderer.renderingLevel = true;
+        SpatialGUIClient.clearTarget();
     }
 
     //? if >=26.2 {
     /*@Inject(method = "render", at = @At("TAIL"))
      *///?} else {
     @Inject(method = "renderLevel", at = @At("TAIL"))
-            //?}
+    //?}
     private void spatialGUI$renderScreen(CallbackInfo ci
             //? if <26.1.2 && >1.20.1 {
             /*, @Local(argsOnly = true, ordinal = 0) Matrix4f modelViewMatrix

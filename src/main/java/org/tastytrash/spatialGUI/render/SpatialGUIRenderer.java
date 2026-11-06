@@ -151,7 +151,9 @@ public class SpatialGUIRenderer {
             screenTexture.prepareTarget();
         }
 
-        //? if fabric && >=26.1.2 {
+        //? if fabric && >=26.4 {
+        /*ScreenEvents.afterExtract(screen).register((screenArg, extractor) -> prepareTarget());
+        *///?} else if fabric && >=26.1.2 {
         ScreenEvents.afterExtract(screen).register((screenArg, extractor, mouseX, mouseY, tickDelta) -> prepareTarget());
         //?} else if fabric {
         /*ScreenEvents.afterRender(screen).register((screenArg, graphics, mouseX, mouseY, tickDelta) -> prepareTarget());

@@ -38,7 +38,9 @@ public final class EditorUtil {
     }
 
     public static void renderWidget(AbstractWidget widget, Object g, int cursorX, int cursorY) {
-        //? if >1.21.11 {
+        //? if >26.3 {
+        /*widget.extractRenderState((GuiGraphicsExtractor) g);
+        *///?} else if >1.21.11 {
         widget.extractRenderState((GuiGraphicsExtractor) g, cursorX, cursorY, 0f);
         //?} else {
         /*widget.render((GuiGraphicsExtractor) g, cursorX, cursorY, 0f);

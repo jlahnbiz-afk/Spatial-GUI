@@ -16,17 +16,26 @@ import org.tastytrash.spatialGUI.editor.EditorMode;
 import org.tastytrash.spatialGUI.util.RenderUtil.QuadBasis;
 import org.tastytrash.spatialGUI.util.RenderUtil.CylinderBasis;
 //? if >1.21.1 {
+//? if <26.4 {
 import net.minecraft.client.renderer.RenderPipelines;
+//?}
 import net.minecraft.client.renderer.rendertype.RenderType;
 //?}
 //? if >26.2 {
-/*import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
+/*//? if <26.4 {
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.vertex.VertexFormat;
+//?} else {
+/^import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.renderer.pipeline.RenderPipelines;
+import net.minecraft.client.renderer.pipeline.variant.GuiRenderPipelineVariant;
+^///?}
+import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
 import com.mojang.renderpearl.api.textures.GpuTextureView;
 import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import com.mojang.renderpearl.api.textures.AddressMode;
 import com.mojang.renderpearl.api.textures.FilterMode;
-import com.mojang.renderpearl.api.vertex.VertexFormat;
 import net.minecraft.client.renderer.StagedVertexBuffer;
 *///?} else if 26.2 {
 /*import com.mojang.blaze3d.buffers.GpuBufferSlice;
@@ -77,9 +86,12 @@ public class WorldScreenRenderer {
     *///?} else if 26.1.2 {
     private static final RenderPipeline SCREEN_PIPELINE = RenderPipeline.builder(RenderPipelines.GUI_TEXTURED_SNIPPET).withLocation("pipeline/spatial_gui_screen").withDepthStencilState(java.util.Optional.empty()).build();
     private static final RenderPipeline OVERLAY_PIPELINE = RenderPipeline.builder(RenderPipelines.GUI_SNIPPET).withLocation("pipeline/spatial_gui_overlay").withDepthStencilState(java.util.Optional.empty()).build();
+    //?} else if < 26.4 {
+//    private static final RenderPipeline SCREEN_PIPELINE = RenderPipelines.GUI_TEXTURED;
+//    private static final RenderPipeline OVERLAY_PIPELINE = RenderPipelines.GUI;
     //?} else {
-    /*private static final RenderPipeline SCREEN_PIPELINE = RenderPipelines.GUI_TEXTURED;
-    private static final RenderPipeline OVERLAY_PIPELINE = RenderPipelines.GUI;
+    /*private static final RenderPipeline SCREEN_PIPELINE = RenderPipelines.gui(new RenderPipelines.GuiParameters(GuiRenderPipelineVariant.TEXTURED));
+    private static final RenderPipeline OVERLAY_PIPELINE = RenderPipelines.gui(new RenderPipelines.GuiParameters(GuiRenderPipelineVariant.DEFAULT));
     *///?}
     private static final org.joml.Vector3f ZERO_VECTOR = new org.joml.Vector3f();
     private static final Matrix4f IDENTITY_MATRIX = new Matrix4f();
@@ -157,7 +169,7 @@ public class WorldScreenRenderer {
         float pitch = isFirstPerson ? (closing ? closePitch : renderer.anchoredPitch()) : 0;
         float pitchClamp = (float) ConfigManager.config().firstPersonPitchClamp;
         //? if >=26.2 {
-        /*pitch = Math.clamp(pitch, -pitchClamp, pitchClamp);
+        /*pitch = Mth.clamp(pitch, -pitchClamp, pitchClamp);
          *///?} else {
         pitch = Mth.clamp(pitch, -pitchClamp, pitchClamp);
         //?}
@@ -671,6 +683,14 @@ public class WorldScreenRenderer {
         GpuBufferSlice dynamicTransforms = screenOpacity();
         FilterMode filterMode = filterMode();
 
+        //? if >26.3 {
+        /^var passLayout = com.mojang.renderpearl.api.pipeline.RenderPassLayout.simple("Spatial GUI", output.texture().getFormat(), 1);
+        try (var renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(
+                () -> "Spatial GUI",
+                com.mojang.renderpearl.api.pipeline.RenderPassLayout.simple("Spatial GUI", output.texture().getFormat(), 1),
+                output
+        )) {
+        ^///?} else {
         try (var renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(
                 () -> "Spatial GUI",
                 output,
@@ -678,11 +698,14 @@ public class WorldScreenRenderer {
                 null,
                 java.util.OptionalDouble.empty()
         )) {
-            //? if >26.2 {
+        //?}
+            //? if >26.3 {
+            /^renderPass.setPipeline(RenderSystem.getCompiledPipeline(SCREEN_PIPELINE, passLayout.subpass(0)));
+            ^///?} else if >26.2 {
             /^renderPass.setPipeline(RenderSystem.getCompiledPipeline(SCREEN_PIPELINE));
-            ^///?} else {
+             ^///?} else {
             renderPass.setPipeline(SCREEN_PIPELINE);
-            //?}
+             //?}
             RenderSystem.bindDefaultUniforms(renderPass);
             renderPass.setUniform("DynamicTransforms", dynamicTransforms);
             //? if >26.2 {
@@ -708,7 +731,14 @@ public class WorldScreenRenderer {
         }
 
         GpuBufferSlice dynamicTransforms = writeTransforms(1f);
-
+        //? if >26.3 {
+        /^var passLayout = com.mojang.renderpearl.api.pipeline.RenderPassLayout.simple("Spatial GUI Overlay", output.texture().getFormat(), 1);
+        try (var renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(
+                () -> "Spatial GUI Overlay",
+                com.mojang.renderpearl.api.pipeline.RenderPassLayout.simple("Spatial GUI Overlay", output.texture().getFormat(), 1),
+                output
+        )) {
+        ^///?} else {
         try (var renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(
                 () -> "Spatial GUI Overlay",
                 output,
@@ -716,11 +746,14 @@ public class WorldScreenRenderer {
                 null,
                 java.util.OptionalDouble.empty()
         )) {
-            //? if >26.2 {
+        //?}
+            //? if >26.3 {
+            /^renderPass.setPipeline(RenderSystem.getCompiledPipeline(OVERLAY_PIPELINE, passLayout.subpass(0)));
+            ^///?} else if >26.2 {
             /^renderPass.setPipeline(RenderSystem.getCompiledPipeline(OVERLAY_PIPELINE));
-            ^///?} else {
+             ^///?} else {
             renderPass.setPipeline(OVERLAY_PIPELINE);
-            //?}
+             //?}
             RenderSystem.bindDefaultUniforms(renderPass);
             renderPass.setUniform("DynamicTransforms", dynamicTransforms);
             renderPass.setVertexBuffer(0, info.vertexBuffer().slice());

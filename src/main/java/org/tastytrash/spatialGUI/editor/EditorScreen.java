@@ -8,7 +8,11 @@ import net.minecraft.util.Mth;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+//? if >26.3 {
+/*import net.minecraft.client.gui.GuiPipeline;
+*///?} else {
 import net.minecraft.client.renderer.RenderPipelines;
+ //?}
 import net.minecraft.resources.Identifier;
 //?}
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -163,15 +167,19 @@ public class EditorScreen extends Screen {
     }
 
     @Override
-    //? if >1.21.11 {
+    //? if >26.3 {
+    /*public void extractRenderState(GuiGraphicsExtractor g) {
+    *///?} else if >1.21.11 {
     public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float delta) {
     //?} else {
     /*public void render(GuiGraphicsExtractor g, int mouseX, int mouseY, float delta) {
-    *///?}
+     *///?}
         if (EditorMode.previewing()) {
             int x = (width - 176) / 2;
             int y = (height - 166) / 2;
-            //? if >1.21.1 {
+            //? if >26.3 {
+            /*g.blit(GuiPipeline.TEXTURED, INVENTORY_TEXTURE, x, y, 0f, 0f, 176, 166, 256, 256);
+            *///?} else if >1.21.1 {
             g.blit(RenderPipelines.GUI_TEXTURED, INVENTORY_TEXTURE, x, y, 0f, 0f, 176, 166, 256, 256);
             //?} else {
             /*g.blit(INVENTORY_TEXTURE, x, y, 0, 0, 176, 166);

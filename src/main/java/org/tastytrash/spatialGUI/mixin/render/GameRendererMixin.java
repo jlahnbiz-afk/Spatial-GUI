@@ -289,6 +289,17 @@ public abstract class GameRendererMixin {
         /*var frame = this.featureRenderDispatcher.prepareFrame(this.handAndScreenSubmitNodeStorage);
         try {
             var mainTarget = ((GameRenderer) (Object) this).mainRenderTarget();
+            //? if >26.3 {
+            /^var colorView = mainTarget.getColorTextureView();
+            var depthView = mainTarget.getDepthTextureView();
+            var passLayout = com.mojang.renderpearl.api.pipeline.RenderPassLayout.simple("Spatial GUI Features", colorView.texture().getFormat(), 1, depthView.texture().getFormat());
+            try (var renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(
+                    () -> passName,
+                    passLayout,
+                    colorView,
+                    depthView
+            )) {
+            ^///?} else {
             try (var renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(
                     () -> passName,
                     mainTarget.getColorTextureView(),
@@ -296,6 +307,7 @@ public abstract class GameRendererMixin {
                     mainTarget.getDepthTextureView(),
                     java.util.OptionalDouble.empty()
             )) {
+            //?}
                 RenderSystem.bindDefaultUniforms(renderPass);
                 net.minecraft.client.renderer.feature.FeatureRenderDispatcher.renderAllFeatures(renderPass, frame);
             }
@@ -304,7 +316,7 @@ public abstract class GameRendererMixin {
                 frame.close();
             }
         }
-         *///?} else {
+        *///?} else {
         //? if >=26.2 {
         /*this.featureRenderDispatcher.renderAllFeatures(this.handAndScreenSubmitNodeStorage);
          *///?} else {
@@ -329,6 +341,13 @@ public abstract class GameRendererMixin {
             spatialGUI$resetGuiScale();
         }
     }
+
+    //? if <26.1.2 {
+    /*@Inject(method = "pick", at = @At("TAIL"))
+    private void spatialGUI$clearTargetWhileInGui(CallbackInfo ci) {
+        SpatialGUIClient.clearTarget();
+    }
+    *///?}
 
     @Inject(method = "processBlurEffect()V", at = @At("HEAD"), cancellable = true)
     private void spatialGUI$cancelBlurEffect(CallbackInfo ci) {
