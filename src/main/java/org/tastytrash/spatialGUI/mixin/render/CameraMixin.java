@@ -239,9 +239,10 @@ public abstract class CameraMixin {
             smoothedCameraYaw = parallaxYawOffset;
             smoothedCameraPitch = parallaxPitchOffset;
 
-            yaw = baseYaw + smoothedCameraYaw;
+            float orbit = CameraUtil.orbitYaw(false);
+            yaw = baseYaw + orbit + smoothedCameraYaw;
             pitch = (float) ConfigManager.config().cameraTargetPitch + smoothedCameraPitch;
-            positionYaw = baseYaw;
+            positionYaw = baseYaw + orbit;
         }
 
         float yawRadians = (float) Math.toRadians(positionYaw);

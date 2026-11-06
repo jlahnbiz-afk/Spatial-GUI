@@ -32,7 +32,7 @@ public class EditorMode {
             new EditorButton(() -> Component.translatable("spatial-gui.editor.button.redo"), false, EditorHistory::redo, EditorHistory::canRedo),
             new EditorButton(() -> Component.translatable("spatial-gui.editor.button.toggle_view"), false, EditorMode::toggleView),
             new EditorButton(EditorMode::guiScaleLabel, false, EditorMode::cycleGuiScale),
-            new EditorButton(EditorMode::curvedScreenLabel, false, EditorMode::toggleCurvedScreen, () -> true, SpatialGUIClient::getEffectiveFirstPersonMode),
+            new EditorButton(EditorMode::curvedScreenLabel, false, EditorMode::toggleCurvedScreen),
             new EditorButton(() -> Component.translatable("spatial-gui.editor.button.undo_all"), true, EditorHistory::undoAll, EditorHistory::canUndo),
             new EditorButton(() -> Component.translatable("spatial-gui.editor.button.set_default"), true, EditorProfiles::setAsDefault, EditorProfiles::canSetDefault),
             new EditorButton(() -> Component.translatable("spatial-gui.editor.button.save_quit"), true, () -> toggle(Minecraft.getInstance()))
@@ -45,9 +45,19 @@ public class EditorMode {
     }
 
     public static final EditorSlider[] SLIDERS = {
-            new EditorSlider(() -> Component.translatable("spatial-gui.editor.slider.arc"), 5, 150, () -> ConfigManager.config().curvedScreenArcDegrees,
-                    degrees -> ConfigManager.config().curvedScreenArcDegrees = (int) Math.round(degrees),
-                    () -> SpatialGUIClient.getEffectiveFirstPersonMode() && ConfigManager.config().curvedScreenEnabled),
+            new EditorSlider(() -> Component.translatable("spatial-gui.editor.slider.arc"), -180, 180, () -> {
+                var config = ConfigManager.config();
+                return SpatialGUIClient.getEffectiveFirstPersonMode() ? config.curvedScreenArcDegrees : config.thirdPersonCurvedScreenArcDegrees;
+            }, degrees -> {
+                var config = ConfigManager.config();
+                if (SpatialGUIClient.getEffectiveFirstPersonMode()) config.curvedScreenArcDegrees = (int) Math.round(degrees);
+                else config.thirdPersonCurvedScreenArcDegrees = (int) Math.round(degrees);
+            }, () -> {
+                var config = ConfigManager.config();
+                boolean enabled = SpatialGUIClient.getEffectiveFirstPersonMode() ? config.curvedScreenEnabled : config.thirdPersonCurvedScreenEnabled;
+                int degrees = SpatialGUIClient.getEffectiveFirstPersonMode() ? config.curvedScreenArcDegrees : config.thirdPersonCurvedScreenArcDegrees;
+                return enabled && Math.abs(degrees) >= 5;
+            }),
             new EditorSlider(() -> Component.translatable("spatial-gui.editor.slider.yaw"), 0, 360, EditorMode::yaw, EditorMode::setYaw),
             new EditorSlider(() -> Component.translatable("spatial-gui.editor.slider.pitch"), -90, 90, EditorMode::pitch, EditorMode::setPitch)
     };
@@ -160,7 +170,11 @@ public class EditorMode {
 
     private static void toggleCurvedScreen() {
         var config = ConfigManager.config();
-        config.curvedScreenEnabled = !config.curvedScreenEnabled;
+        if (SpatialGUIClient.getEffectiveFirstPersonMode()) {
+            config.curvedScreenEnabled = !config.curvedScreenEnabled;
+        } else {
+            config.thirdPersonCurvedScreenEnabled = !config.thirdPersonCurvedScreenEnabled;
+        }
     }
 
     private static Component guiScaleLabel() {
@@ -173,7 +187,8 @@ public class EditorMode {
 
     private static Component curvedScreenLabel() {
         var config = ConfigManager.config();
-        Component value = config.curvedScreenEnabled
+        boolean enabled = SpatialGUIClient.getEffectiveFirstPersonMode() ? config.curvedScreenEnabled : config.thirdPersonCurvedScreenEnabled;
+        Component value = enabled
                 ? Component.translatable("spatial-gui.editor.value.on")
                 : Component.translatable("spatial-gui.editor.value.off");
         return Component.translatable("spatial-gui.editor.button.curved_screen", value);

@@ -310,7 +310,17 @@ public class SpatialGUIConfig {
     // ===========
     // thirdPerson
     // ===========
-    // screen 
+    // screen
+    @MasterTickBox(value = {"thirdPersonCurvedScreenArcDegrees"})
+    @SerialEntry
+    @AutoGen(category = "thirdPerson", group = "screen")
+    public boolean thirdPersonCurvedScreenEnabled = false;
+
+    @SerialEntry
+    @AutoGen(category = "thirdPerson", group = "screen")
+    @IntSlider(min = -180, max = 180, step = 1)
+    public int thirdPersonCurvedScreenArcDegrees = 30;
+
     @SerialEntry
     @AutoGen(category = "thirdPerson", group = "screen")
     @DoubleSlider(min = 0.1, max = 10.0, step = 0.05)
@@ -369,6 +379,11 @@ public class SpatialGUIConfig {
     @AutoGen(category = "thirdPerson", group = "camera")
     @DoubleSlider(min = -1.0, max = 4.0, step = 0.05)
     public double cameraHeightOffset = 1.5;
+
+    @SerialEntry
+    @AutoGen(category = "thirdPerson", group = "camera")
+    @DoubleSlider(min = -180.0, max = 180.0, step = 1.0)
+    public double cameraOrbitYaw = 0.0;
 
     @SerialEntry
     @AutoGen(category = "thirdPerson", group = "camera")
@@ -455,7 +470,7 @@ public class SpatialGUIConfig {
 
     @SerialEntry
     @AutoGen(category = "firstPerson", group = "screen")
-    @IntSlider(min = 5, max = 150, step = 1)
+    @IntSlider(min = -180, max = 180, step = 1)
     public int curvedScreenArcDegrees = 30;
 
     @SerialEntry

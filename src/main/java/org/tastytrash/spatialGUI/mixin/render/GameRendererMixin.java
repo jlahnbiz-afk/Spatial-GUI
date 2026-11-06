@@ -569,16 +569,16 @@ public abstract class GameRendererMixin {
         var prevProjectionType = RenderSystem.getProjectionType();
         boolean prevRenderingLevel = SpatialGUIRenderer.renderingLevel;
 
-        var capturedPose = renderer.getWorldScreenRenderer().getCapturedPoseStack().last();
         var poseStack = new com.mojang.blaze3d.vertex.PoseStack();
-        poseStack.last().pose().set(capturedPose.pose());
-        poseStack.last().normal().set(capturedPose.normal());
+        var modelViewStack = RenderSystem.getModelViewStack();
+        modelViewStack.pushMatrix();
 
         try {
             SpatialGUIRenderer.renderingLevel = true;
             if (renderer.getCapturedProjectionBuffer() != null && renderer.getCapturedProjectionType() != null) {
                 RenderSystem.setProjectionMatrix(renderer.getCapturedProjectionBuffer(), renderer.getCapturedProjectionType());
             }
+            modelViewStack.mul(renderer.getWorldScreenRenderer().getCapturedPoseStack().last().pose());
             this.lighting.setupFor(LEVEL);
             RenderSystem.setShaderFog(this.fogRenderer.getBuffer(FogRenderer.FogMode.WORLD));
 
@@ -593,6 +593,7 @@ public abstract class GameRendererMixin {
         } finally {
             SpatialGUIRenderer.renderingLevel = prevRenderingLevel;
             WorldBlurRenderer.drawingDeferredPlayer = false;
+            modelViewStack.popMatrix();
             RenderSystem.setShaderFog(this.fogRenderer.getBuffer(FogRenderer.FogMode.NONE));
             RenderSystem.setProjectionMatrix(prevProjectionBuffer, prevProjectionType);
         }

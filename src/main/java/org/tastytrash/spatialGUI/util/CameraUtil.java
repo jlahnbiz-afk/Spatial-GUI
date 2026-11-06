@@ -17,6 +17,10 @@ import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 public class CameraUtil {
     private CameraUtil() {}
 
+    public static float orbitYaw(boolean isFirstPerson) {
+        return isFirstPerson ? 0f : (float) ConfigManager.config().cameraOrbitYaw;
+    }
+
     public static void checkBlockCollision(Entity entity) {
         if (Minecraft.getInstance().level == null || !ConfigManager.config().fallbackToFirstPersonOnBlockCollision) {
             SpatialGUIClient.setSwitchedToFirstPersonDueToBlock(false);
@@ -24,7 +28,7 @@ public class CameraUtil {
         }
 
         var renderer = SpatialGUIClient.renderer();
-        float yawRadians = (float) Math.toRadians(renderer.anchoredYaw());
+        float yawRadians = (float) Math.toRadians(renderer.anchoredYaw() + orbitYaw(false));
         double sideOffset = ConfigManager.config().cameraSideOffset;
         if (ConfigManager.config().mirrorThirdPerson) {
             sideOffset = -sideOffset;

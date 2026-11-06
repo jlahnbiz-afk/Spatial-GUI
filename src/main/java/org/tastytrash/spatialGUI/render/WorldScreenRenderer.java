@@ -65,6 +65,7 @@ import org.lwjgl.opengl.GL11;
 *///?}
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.util.AnimationUtil;
+import org.tastytrash.spatialGUI.util.CameraUtil;
 import org.tastytrash.spatialGUI.util.RenderUtil;
 
 public class WorldScreenRenderer {
@@ -152,7 +153,7 @@ public class WorldScreenRenderer {
 
     private ScreenPose computeScreenPose(PoseStack matrices, boolean isFirstPerson) {
         var renderer = SpatialGUIClient.renderer();
-        float yaw = closing ? closeYaw : renderer.anchoredYaw();
+        float yaw = closing ? closeYaw : renderer.anchoredYaw() + CameraUtil.orbitYaw(isFirstPerson);
         float pitch = isFirstPerson ? (closing ? closePitch : renderer.anchoredPitch()) : 0;
         float pitchClamp = (float) ConfigManager.config().firstPersonPitchClamp;
         //? if >=26.2 {
@@ -194,9 +195,13 @@ public class WorldScreenRenderer {
     private void updateScreenBases(ScreenPose pose, boolean isFirstPerson) {
         Matrix4f worldPose = WORLD_POSE_STACK.last().pose();
         quadBasis = RenderUtil.computeQuadBasis(worldPose, pose.aspect(), pose.scale());
-        cylinderBasis = isCurvedScreenActive(isFirstPerson)
-                ? RenderUtil.computeCylinderBasis(worldPose, pose.aspect(), pose.scale(), (float) Math.toRadians(ConfigManager.config().curvedScreenArcDegrees))
-                : null;
+        if (isCurvedScreenActive(isFirstPerson)) {
+            var config = ConfigManager.config();
+            float arcRadians = (float) Math.toRadians(isFirstPerson ? config.curvedScreenArcDegrees : config.thirdPersonCurvedScreenArcDegrees);
+            cylinderBasis = RenderUtil.computeCylinderBasis(worldPose, pose.aspect(), pose.scale(), arcRadians);
+        } else {
+            cylinderBasis = null;
+        }
     }
 
     public QuadBasis getQuadBasis() {
@@ -218,16 +223,19 @@ public class WorldScreenRenderer {
     }
 
     private static boolean isCurvedScreenActive(boolean isFirstPerson) {
-        return ConfigManager.config().curvedScreenEnabled && isFirstPerson
-                && ConfigManager.config().curvedScreenArcDegrees >= 5
-                && ConfigManager.config().curvedScreenArcDegrees <= 150;
+        var config = ConfigManager.config();
+        if (isFirstPerson) {
+            return config.curvedScreenEnabled;
+        } else {
+            return config.thirdPersonCurvedScreenEnabled;
+        }
     }
 
     private void addScreenQuadMesh(VertexConsumer buffer, Matrix4f pose, float aspect, boolean isFirstPerson) {
         var config = ConfigManager.config();
         int lightingTint = computeLightingTint();
         boolean curved = isCurvedScreenActive(isFirstPerson);
-        float arcRadians = (float) Math.toRadians(config.curvedScreenArcDegrees);
+        float arcRadians = (float) Math.toRadians(isFirstPerson ? config.curvedScreenArcDegrees : config.thirdPersonCurvedScreenArcDegrees);
         float softness = (float) config.dropShadowSoftness;
         int taps = !config.dropShadowEnabled ? 0 : softness > 0 ? SHADOW_TAPS : 1;
         int tapAlpha = taps <= 1 ? config.dropShadowAlpha : Math.round(255 * (1 - (float) Math.pow(1 - Math.min(config.dropShadowAlpha / 255.0F, 0.92F), 1.0 / taps)));
@@ -300,7 +308,7 @@ public class WorldScreenRenderer {
     private boolean drawingDeferredPlayer;
 
     public boolean isDrawingDeferredPlayer() {
-        return drawingDeferredPlayer;
+    return drawingDeferredPlayer;
     }
 
     public boolean hasDeferredPlayer() {
@@ -331,15 +339,16 @@ public class WorldScreenRenderer {
         boolean prevRenderingLevel = SpatialGUIRenderer.renderingLevel;
 
         PoseStack poseStack = new PoseStack();
-        poseStack.last().pose().set(capturedPoseStack.last().pose());
-        poseStack.last().normal().set(capturedPoseStack.last().normal());
 
         modelView.pushMatrix();
         try {
             //? if >1.20.1 {
             modelView.identity();
+            modelView.mul(capturedPoseStack.last().pose());
             //?} else {
             /^modelView.setIdentity();
+            poseStack.last().pose().set(capturedPoseStack.last().pose());
+            poseStack.last().normal().set(capturedPoseStack.last().normal());
             ^///?}
             RenderSystem.applyModelViewMatrix();
             RenderSystem.setProjectionMatrix(capturedProjectionMatrix, capturedVertexSorting);
@@ -387,7 +396,7 @@ public class WorldScreenRenderer {
         closeDurationMs = duration;
         closeFirstPerson = firstPerson;
         var renderer = SpatialGUIClient.renderer();
-        closeYaw = renderer.anchoredYaw();
+        closeYaw = renderer.anchoredYaw() + CameraUtil.orbitYaw(firstPerson);
         closePitch = renderer.anchoredPitch();
         hasDrawnThisFrame = false;
         return true;

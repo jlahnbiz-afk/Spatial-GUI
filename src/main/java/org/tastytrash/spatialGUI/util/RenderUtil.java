@@ -315,7 +315,7 @@ public final class RenderUtil {
         Vector3f axisPos = worldPose.transformPosition(0.0f, 0.0f, radiusLocal, new Vector3f());
         Vector3f center = worldPose.transformPosition(new Vector3f());
         Vector3f axisDir = worldPose.transformDirection(0.0f, 1.0f, 0.0f, new Vector3f()).normalize();
-        Vector3f refDir = worldPose.transformDirection(0.0f, 0.0f, -1.0f, new Vector3f()).normalize();
+        Vector3f refDir = worldPose.transformDirection(0.0f, 0.0f, arcRadians < 0.0f ? 1.0f : -1.0f, new Vector3f()).normalize();
         return new CylinderBasis(axisPos, axisDir, refDir, center, radiusLocal * scale, arcRadians, 0.5f * scale);
     }
 

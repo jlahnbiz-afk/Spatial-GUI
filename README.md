@@ -101,5 +101,5 @@ DevPunchyMan & Godku (Punchy Guys Studios) for adding Spatial GUI compatibility 
 Dizabanik for tons of code fixes and improvements  
 BUILDLCS for the Brazilian Portuguese translation  
 suheckii for the Russian translation  
-22SSendo & jankeverse for particularly awesome feature suggestions  
+22SSendo, jankeverse, and Talbone for particularly awesome feature suggestions  
 Anyone else who reported bugs or suggested features :)

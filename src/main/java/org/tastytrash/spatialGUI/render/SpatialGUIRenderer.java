@@ -298,7 +298,14 @@ public class SpatialGUIRenderer {
         return worldScreen.getCloseElapsedMs();
     }
 
+    public boolean isCloseCameraFinished() {
+        float skipFraction = ConfigManager.config().transitionSkipPercentage / 100.0f;
+        float cameraMs = Math.max(1, ConfigManager.config().transitionDurationMs) * (1.0f - skipFraction);
+        return worldScreen.getCloseElapsedMs() >= cameraMs;
+    }
+
     public float getCloseBlend() {
+        if (isCloseCameraFinished()) return 1.0f;
         float duration = Math.max(1, ConfigManager.config().transitionDurationMs);
         float skipFraction = ConfigManager.config().transitionSkipPercentage / 100.0f;
         float openProgress = Math.max(skipFraction, 1.0f - worldScreen.getCloseElapsedMs() / duration);

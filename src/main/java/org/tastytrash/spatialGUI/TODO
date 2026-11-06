@@ -5,7 +5,6 @@ __________ FIXES _________________
 Sort config appearance tab
 
 Compat:
- - Touch'n Motion
  - Real Camera (#25) (May not be possible)
  - Item Zoomer (Forge 1.20.1 w/ JEI)
  - Legacy4J (#164)
@@ -46,9 +45,6 @@ Possible later ideas:
  - Snap to grid?
  - Tooltips on editor buttons
 ////////////////////////////////////////
-
-
-Parallax magnitude config
 
 ------- MAYBE NOT -----
 
