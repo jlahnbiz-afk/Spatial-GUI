@@ -412,7 +412,7 @@ public abstract class GameRendererMixin {
         } else if (renderer != null && renderer.isClosing() && SpatialGUIClient.isEnabled()) {
             renderer.renderInWorldPost();
 
-            if (ConfigManager.config().renderPlayerInFront) {
+            if (ConfigManager.config().renderPlayerInFront && !renderer.isCloseCameraFinished()) {
                 spatialGUI$renderPlayerInFront();
             }
 
@@ -496,7 +496,7 @@ public abstract class GameRendererMixin {
                 ci.cancel();
             }
         }
-        if (renderer.isClosing() && (renderer.isClosingFirstPerson() || playerInFront)) {
+        if (renderer.isClosing() && (renderer.isClosingFirstPerson() || playerInFront) && !renderer.isCloseCameraFinished()) {
             ci.cancel();
         }
     }
@@ -666,7 +666,7 @@ public abstract class GameRendererMixin {
         } else if (renderer != null && renderer.isClosing() && SpatialGUIClient.isEnabled()) {
             renderer.renderInWorldPost();
 
-            if (ConfigManager.config().renderPlayerInFront) {
+            if (ConfigManager.config().renderPlayerInFront && !renderer.isCloseCameraFinished()) {
                 spatialGUI$renderPlayerInFront();
             }
 

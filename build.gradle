@@ -48,6 +48,12 @@ def compatMods = [
                         "26.3": "3.5.3+mc26.3",
                 ]
         ],
+        aerocamsync: [
+                artifact: "maven.modrinth:aero_cam_sync:{}",
+                versions: [
+                        "1.21.1-neoforge": "1.4.0",
+                ]
+        ],
 ]
 
 def compatResolved = compatMods.collectEntries { id, spec ->

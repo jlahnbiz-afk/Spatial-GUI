@@ -101,7 +101,6 @@ public class SpatialGUIConfig {
     @MasterTickBox(value = {"guiScale"})
     @SerialEntry
     @AutoGen(category = "general", group = "guiScale")
-    @TickBox
     public boolean overrideGuiScale = false;
 
     @SerialEntry
@@ -405,7 +404,12 @@ public class SpatialGUIConfig {
     @TickBox
     public boolean fallbackToFirstPersonOnBlockCollision = false;
 
-    // avatar 
+    @MasterTickBox(value = {"adjustAvatarForFrontView"})
+    @SerialEntry
+    @AutoGen(category = "thirdPerson", group = "camera")
+    public boolean thirdPersonFrontSpecialCase = true;
+
+    // avatar
     @SerialEntry
     @AutoGen(category = "thirdPerson", group = "avatar")
     @TickBox
@@ -435,6 +439,11 @@ public class SpatialGUIConfig {
     @AutoGen(category = "thirdPerson", group = "avatar")
     @IntSlider(min = 0, max = 90, step = 1)
     public int avatarMaxPitchOffset = 25;
+
+    @SerialEntry
+    @AutoGen(category = "thirdPerson", group = "avatar")
+    @TickBox
+    public boolean adjustAvatarForFrontView = true;
 
     // controls 
     @SerialEntry

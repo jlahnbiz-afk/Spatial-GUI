@@ -87,9 +87,9 @@ public class WorldScreenRenderer {
     private static final RenderPipeline SCREEN_PIPELINE = RenderPipeline.builder(RenderPipelines.GUI_TEXTURED_SNIPPET).withLocation("pipeline/spatial_gui_screen").withDepthStencilState(java.util.Optional.empty()).build();
     private static final RenderPipeline OVERLAY_PIPELINE = RenderPipeline.builder(RenderPipelines.GUI_SNIPPET).withLocation("pipeline/spatial_gui_overlay").withDepthStencilState(java.util.Optional.empty()).build();
     //?} else if < 26.4 {
-//    private static final RenderPipeline SCREEN_PIPELINE = RenderPipelines.GUI_TEXTURED;
-//    private static final RenderPipeline OVERLAY_PIPELINE = RenderPipelines.GUI;
-    //?} else {
+    /*private static final RenderPipeline SCREEN_PIPELINE = RenderPipelines.GUI_TEXTURED;
+    private static final RenderPipeline OVERLAY_PIPELINE = RenderPipelines.GUI;
+    *///?} else {
     /*private static final RenderPipeline SCREEN_PIPELINE = RenderPipelines.gui(new RenderPipelines.GuiParameters(GuiRenderPipelineVariant.TEXTURED));
     private static final RenderPipeline OVERLAY_PIPELINE = RenderPipelines.gui(new RenderPipelines.GuiParameters(GuiRenderPipelineVariant.DEFAULT));
     *///?}

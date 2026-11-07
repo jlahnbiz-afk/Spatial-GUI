@@ -6,19 +6,19 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.mixin.accessor.CameraAccessor;
-import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 
 public class CameraUtil {
     private CameraUtil() {}
 
     public static float orbitYaw(boolean isFirstPerson) {
-        return isFirstPerson ? 0f : (float) ConfigManager.config().cameraOrbitYaw;
+        if (isFirstPerson) return 0f;
+        float orbit = (float) ConfigManager.config().cameraOrbitYaw;
+        if (ConfigManager.config().thirdPersonFrontSpecialCase && SpatialGUIClient.getOriginalCameraType() == net.minecraft.client.CameraType.THIRD_PERSON_FRONT) orbit += 180f;
+        return orbit;
     }
 
     public static void checkBlockCollision(Entity entity) {

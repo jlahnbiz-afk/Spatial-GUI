@@ -2,12 +2,12 @@ package org.tastytrash.spatialGUI.mixin.player;
 
 import org.tastytrash.spatialGUI.config.ConfigManager;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.Mth;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.mixin.accessor.MouseHandlerAccessor;
+import org.tastytrash.spatialGUI.util.MouseHandlerUtil;
 
 //? if >1.21.1 {
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
@@ -59,14 +59,18 @@ public class AvatarRendererMixin {
         }
 
         var mouse = (MouseHandlerAccessor) client.mouseHandler;
-        float normX = Mth.clamp((float) (mouse.getRawXpos() / client.getWindow().getScreenWidth()) * 2f - 1f, -1f, 1f);
-        float normY = Mth.clamp((float) (mouse.getRawYpos() / client.getWindow().getScreenHeight()) * 2f - 1f, -1f, 1f);
+        float normX = Mth.clamp((float) (MouseHandlerUtil.getPhysicalX(mouse.getRawXpos()) / client.getWindow().getScreenWidth()) * 2f - 1f, -1f, 1f);
+        float normY = Mth.clamp((float) (MouseHandlerUtil.getPhysicalY(mouse.getRawYpos()) / client.getWindow().getScreenHeight()) * 2f - 1f, -1f, 1f);
         if (ConfigManager.config().mirrorHeadMovement) normX = -normX;
 
         boolean isElytraFlying = client.player != null && client.player.isFallFlying();
 
-        float side = ConfigManager.config().mirrorThirdPerson ? -1f : 1f;
-        float targetBody = renderer.anchoredYaw() + side * (float) ConfigManager.config().avatarBodyRotationOffset;
+        boolean front = SpatialGUIClient.getOriginalCameraType() == net.minecraft.client.CameraType.THIRD_PERSON_FRONT;
+        boolean adjustPlayer = ConfigManager.config().thirdPersonFrontSpecialCase && ConfigManager.config().adjustAvatarForFrontView;
+        float frontTurn = front && ConfigManager.config().thirdPersonFrontSpecialCase && !ConfigManager.config().adjustAvatarForFrontView ? 180f : 0f;
+        float side = ConfigManager.config().mirrorThirdPerson != (front && adjustPlayer) ? -1f : 1f;
+        if (front && adjustPlayer) normX = -normX;
+        float targetBody = renderer.anchoredYaw() + frontTurn + side * (float) ConfigManager.config().avatarBodyRotationOffset;
         float targetYaw = normX * (float) ConfigManager.config().avatarMaxYawOffset + side * (float) ConfigManager.config().avatarBaseYawOffset;
         float targetPitch = isElytraFlying ? vanillaPitch : Mth.clamp(normY * (float) ConfigManager.config().avatarMaxPitchOffset, -60f, 60f);
 

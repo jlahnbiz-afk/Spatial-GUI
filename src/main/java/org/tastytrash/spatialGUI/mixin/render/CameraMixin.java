@@ -11,6 +11,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -37,6 +38,9 @@ public abstract class CameraMixin {
     @Shadow private float xRot;
     @Shadow private float yRot;
     @Final @Shadow private Quaternionf rotation;
+    @Final @Shadow private Vector3f forwards;
+    @Final @Shadow private Vector3f up;
+    @Final @Shadow private Vector3f left;
 
     @Unique private static Vec3 startPos;
     @Unique private static float startYRot;
@@ -60,6 +64,13 @@ public abstract class CameraMixin {
 
     @Unique
     private record CameraTransform(Vec3 pos, float yaw, float pitch) {}
+
+    @Unique
+    private void spatialGUI$updateLookVectors() {
+        this.forwards.set(0f, 0f, -1f).rotate(this.rotation);
+        this.up.set(0f, 1f, 0f).rotate(this.rotation);
+        this.left.set(-1f, 0f, 0f).rotate(this.rotation);
+    }
 
     //? if >=26.1.2 {
     @ModifyReturnValue(method = "calculateFov", at = @At("RETURN"))
@@ -123,6 +134,7 @@ public abstract class CameraMixin {
             lastYRot = yRot;
             lastXRot = xRot;
             this.rotation.rotationYXZ((float) Math.PI - this.yRot * ((float) Math.PI / 180F), -this.xRot * ((float) Math.PI / 180F), 0.0F);
+            spatialGUI$updateLookVectors();
             wasCapturing = true;
         } else if (renderer.isClosingWithCameraTransition() && lastOffset != null && this.entity != null && SpatialGUIClient.isEnabled()) {
             closingCameraActive = true;
@@ -137,11 +149,11 @@ public abstract class CameraMixin {
 
             position = new Vec3(MathUtil.lerp(screenCameraPos.x, normalPos.x, easedProgress), MathUtil.lerp(screenCameraPos.y, normalPos.y, easedProgress), MathUtil.lerp(screenCameraPos.z, normalPos.z, easedProgress));
             SpatialGUIClient.setScreenAnchorDelta(screenCameraPos.subtract(position));
-            boolean isThirdPersonFront = SpatialGUIClient.getOriginalCameraType() == net.minecraft.client.CameraType.THIRD_PERSON_FRONT;
-            yRot = isThirdPersonFront ? normalYRot : MathUtil.rotLerp(lastYRot, normalYRot, easedProgress);
+            yRot = MathUtil.rotLerp(lastYRot, normalYRot, easedProgress);
             boolean fromFirstPerson = renderer.isClosingFirstPerson();
             xRot = (toFirstPerson || fromFirstPerson || (ConfigManager.config().lerpCameraPitch && SpatialGUIClient.getWasThirdPersonCamera())) ? MathUtil.lerp(lastXRot, normalXRot, easedProgress) : normalXRot;
             this.rotation.rotationYXZ((float) Math.PI - this.yRot * ((float) Math.PI / 180F), -this.xRot * ((float) Math.PI / 180F), 0.0F);
+            spatialGUI$updateLookVectors();
             SpatialGUIClient.setCameraPosition(position);
         } else {
             this.resetCameraState();
@@ -289,11 +301,12 @@ public abstract class CameraMixin {
         if (savedStartPos != null) {
             startPos = savedStartPos;
             startYRot = renderer.getCameraStartYRot();
+            startXRot = renderer.getCameraStartXRot();
         } else {
             startPos = new Vec3(position.x, position.y, position.z);
             startYRot = yRot;
+            startXRot = xRot;
         }
-        startXRot = xRot;
         transitionStartTime = System.currentTimeMillis();
         isTransitioning = true;
 
@@ -320,8 +333,7 @@ public abstract class CameraMixin {
             float easedProgress = AnimationUtil.easeInOutSine(progress);
 
             position = new Vec3(MathUtil.lerp(startPos.x, newTargetPos.x, easedProgress), MathUtil.lerp(startPos.y, newTargetPos.y, easedProgress), MathUtil.lerp(startPos.z, newTargetPos.z, easedProgress));
-            boolean isThirdPersonFront = SpatialGUIClient.getOriginalCameraType() == net.minecraft.client.CameraType.THIRD_PERSON_FRONT;
-            yRot = (progress >= 1.0f || isThirdPersonFront) ? newTargetYRot : MathUtil.rotLerp(startYRot, newTargetYRot, easedProgress);
+            yRot = MathUtil.rotLerp(startYRot, newTargetYRot, easedProgress);
             xRot = (ConfigManager.config().lerpCameraPitch && SpatialGUIClient.getWasThirdPersonCamera() && progress < 1.0f) ? MathUtil.lerp(startXRot, newTargetXRot, easedProgress) : newTargetXRot;
         }
         SpatialGUIClient.setCameraPosition(position);

@@ -1,6 +1,7 @@
 package org.tastytrash.spatialGUI.util;
 
 import org.joml.*;
+import org.tastytrash.spatialGUI.compat.AeroCamSyncCompat;
 import org.tastytrash.spatialGUI.compat.RecipeViewerCompat;
 import org.tastytrash.spatialGUI.config.ConfigManager;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -234,7 +235,11 @@ public final class RenderUtil {
         dx *= dInv;
         dy *= dInv;
         dz *= dInv;
-        return new float[]{dx, dy, dz};
+        float[] ray = new float[]{dx, dy, dz};
+        //? if aerocamsync {
+        /*AeroCamSyncCompat.tiltRay(ray, camera.getPartialTickTime());
+        *///?}
+        return ray;
     }
 
     public static Vector2f getQuadPlanePosition(double screenX, double screenY, QuadBasis basis) {

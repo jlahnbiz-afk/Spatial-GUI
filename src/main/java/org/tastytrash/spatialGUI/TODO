@@ -8,16 +8,16 @@ Shadow appears when it shouldn't, like on ice
 
 Body submerged in water disappears
 
-Shaders in 26.4
-
-Something is up with tooltips in 26.4 (Mojang's fault)
-
 Compat:
  - Real Camera (#25) (May not be possible)
  - Item Zoomer (Forge 1.20.1 w/ JEI)
  - Legacy4J (#164)
 
 -------- MID PRIORITY ---------------
+
+Shaders in 26.4
+
+Something is up with tooltips in 26.4 (Mojang's fault)
 
 Change third person default config
 
@@ -29,9 +29,7 @@ In-game warning to recommend turning on override GUI scale while a
 __________ SUGGESTIONS/FEATURES _________________
 ================================================
 
-Curved third-person screen
-
-Rotate camera to player, rather than the opposite
+Better config, too cluttered/confusing
 
 Refresh rate?
 

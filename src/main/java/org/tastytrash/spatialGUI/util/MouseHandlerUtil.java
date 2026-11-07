@@ -121,21 +121,13 @@ public class MouseHandlerUtil {
         return mouse;
     }
 
-    public static double getFallback(boolean isX) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.getWindow() != null) {
-            return isX ? mc.getWindow().getGuiScaledWidth() / 2.0 : mc.getWindow().getGuiScaledHeight() / 2.0;
-        }
-        return 0.0;
-    }
-
     public static double getLastPos(boolean isX, double fallback) {
         double val = isX ? mappedX : mappedY;
         return Double.isNaN(val) ? fallback : val;
     }
 
     public static double getLastPos(boolean isX) {
-        return getLastPos(isX, getFallback(isX));
+        return getLastPos(isX, -1.0f);
     }
 
     public static int getHoverX() {

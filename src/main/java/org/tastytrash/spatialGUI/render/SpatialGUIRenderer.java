@@ -55,6 +55,7 @@ public class SpatialGUIRenderer {
     private static boolean isInventoryScreen;
     private Vec3 cameraStartPos;
     private float cameraStartYRot;
+    private float cameraStartXRot;
     private static boolean wasTrue;
     public boolean poseStarted = false;
     private long removedFrame = -1;
@@ -388,12 +389,15 @@ public class SpatialGUIRenderer {
             //? if >=26.2 {
             /*cameraStartPos = mc.gameRenderer.getMainCamera().position();
             cameraStartYRot = mc.gameRenderer.getMainCamera().yRot();
+            cameraStartXRot = mc.gameRenderer.getMainCamera().xRot();
             *///?} else if >=1.21.11 {
             cameraStartPos = mc.gameRenderer.getMainCamera().position();
             cameraStartYRot = mc.gameRenderer.getMainCamera().yRot();
+            cameraStartXRot = mc.gameRenderer.getMainCamera().xRot();
             //?} else {
             /*cameraStartPos = mc.gameRenderer.getMainCamera().getPosition();
             cameraStartYRot = mc.gameRenderer.getMainCamera().getYRot();
+            cameraStartXRot = mc.gameRenderer.getMainCamera().getXRot();
             *///?}
             wasTrue = true;
         }
@@ -407,6 +411,10 @@ public class SpatialGUIRenderer {
 
     public float getCameraStartYRot() {
         return cameraStartYRot;
+    }
+
+    public float getCameraStartXRot() {
+        return cameraStartXRot;
     }
 
     public float getFovOverrideFactor() {
@@ -516,7 +524,7 @@ public class SpatialGUIRenderer {
     public boolean bobSwayActive() {
         return SpatialGUIClient.isEnabled()
                 && SpatialGUIClient.getEffectiveFirstPersonMode()
-                && (hookedScreen != null || isClosingFirstPerson())
+                && (hookedScreen != null || (isClosingFirstPerson() && !SpatialGUIClient.getWasThirdPersonCamera()))
                 && !ConfigManager.config().hideHandsInFirstPerson;
     }
 
@@ -602,6 +610,6 @@ public class SpatialGUIRenderer {
 
     public boolean shouldDeferPlayer() {
         return SpatialGUIClient.isEnabled() && ConfigManager.config().renderPlayerInFront
-                && (shouldCapture() ? !SpatialGUIClient.getEffectiveFirstPersonMode() : isClosing() && !isClosingFirstPerson());
+                && (shouldCapture() ? !SpatialGUIClient.getEffectiveFirstPersonMode() : isClosing() && !isClosingFirstPerson() && !isCloseCameraFinished());
     }
 }
