@@ -98,6 +98,12 @@ public class EntityRenderDispatcherMixin {
     private void spatialGUI$skipLocalPlayerSubmit(EntityRenderState renderState, CameraRenderState camera, double x, double y, double z, PoseStack poseStack, SubmitNodeCollector output, CallbackInfo ci) {
         var deferred = WorldBlurRenderer.getDeferredPlayerRenderState();
         if (deferred != null && renderState == deferred) {
+            if (!renderState.shadowPieces.isEmpty()) {
+                poseStack.pushPose();
+                poseStack.translate(x, y, z);
+                output.submitShadow(poseStack, renderState.shadowRadius, renderState.shadowPieces);
+                poseStack.popPose();
+            }
             ci.cancel();
         }
     }

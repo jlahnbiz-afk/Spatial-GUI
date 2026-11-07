@@ -2,12 +2,6 @@ __________ FIXES _________________
 ================================
 -------- HIGH PRIORITY ---------------
 
-Sort config appearance tab
-
-Shadow appears when it shouldn't, like on ice
-
-Body submerged in water disappears
-
 Compat:
  - Real Camera (#25) (May not be possible)
  - Item Zoomer (Forge 1.20.1 w/ JEI)
@@ -20,6 +14,8 @@ Shaders in 26.4
 Something is up with tooltips in 26.4 (Mojang's fault)
 
 Change third person default config
+
+Body half submerged doesn't render water tint with player over screen
 
 -------- LOW PRIORITY ---------------
 
@@ -50,8 +46,6 @@ Possible later ideas:
 ////////////////////////////////////////
 
 ------- MAYBE NOT -----
-
-Special transition case for third person front
 
 Block-anchored screens
 

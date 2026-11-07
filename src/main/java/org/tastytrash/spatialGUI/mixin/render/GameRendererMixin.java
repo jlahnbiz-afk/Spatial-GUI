@@ -216,6 +216,7 @@ public abstract class GameRendererMixin {
             );
 
             spatialGUI$renderFeaturesToMainTarget("Item in hand in front of SpatialGUI");
+            SpatialGUIClient.renderer().getWorldScreenRenderer().renderScreenOverPlayer();
 
             modelViewStack.popMatrix();
             poseStack.popPose();
@@ -260,6 +261,10 @@ public abstract class GameRendererMixin {
 
             var camPos = cameraRenderState.pos;
             WorldBlurRenderer.setDeferredPlayerRenderState(null);
+            deferredState.shadowPieces.clear();
+            if (mc.player != null && mc.player.isInWater()) {
+                spatialGUI$clearDepth();
+            }
             mc.getEntityRenderDispatcher().submit(deferredState, cameraRenderState,
                     deferredState.x - camPos.x, deferredState.y - camPos.y, deferredState.z - camPos.z,
                     new com.mojang.blaze3d.vertex.PoseStack(),

@@ -26,6 +26,7 @@ ___
 * Screen opening animation
 * FOV override
 * Auto-detect camera mode, switches the camera mode based on perspective
+* World shader effects (26.1.2+ only)
 
 ### First-person Mode
 ![First-person menu crafting GIF](https://cdn.modrinth.com/data/cached_images/961b53d75867806bf45fb6f7df0e5e34b242b322.gif)

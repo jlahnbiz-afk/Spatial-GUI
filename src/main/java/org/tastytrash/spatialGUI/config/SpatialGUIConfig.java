@@ -170,84 +170,6 @@ public class SpatialGUIConfig {
     @DoubleSlider(min = 1.0, max = 3.0, step = 0.05)
     public double recipeBookShrinkFactor = 1.5;
 
-    // dropShadow
-    @MasterTickBox(value = {"dropShadowSoftness", "dropShadowAlpha", "dropShadowScaleMultiplier", "dropShadowHorizontalOffset", "dropShadowVerticalOffset", "dropShadowDepthOffset"})
-    @SerialEntry
-    @AutoGen(category = "appearance", group = "dropShadow")
-    public boolean dropShadowEnabled = true;
-
-    @SerialEntry
-    @AutoGen(category = "appearance", group = "dropShadow")
-    @DoubleSlider(min = 0.0, max = 0.05, step = 0.001)
-    public double dropShadowSoftness = 0.0;
-
-    @SerialEntry
-    @AutoGen(category = "appearance", group = "dropShadow")
-    @IntSlider(min = 0, max = 255, step = 1)
-    public int dropShadowAlpha = 120;
-
-    @SerialEntry
-    @AutoGen(category = "appearance", group = "dropShadow")
-    @DoubleSlider(min = 0.8, max = 1.2, step = 0.01)
-    public double dropShadowScaleMultiplier = 1.0;
-
-    @SerialEntry
-    @AutoGen(category = "appearance", group = "dropShadow")
-    @DoubleSlider(min = -0.05, max = 0.05, step = 0.001)
-    public double dropShadowHorizontalOffset = 0.008;
-
-    @SerialEntry
-    @AutoGen(category = "appearance", group = "dropShadow")
-    @DoubleSlider(min = -0.05, max = 0.05, step = 0.001)
-    public double dropShadowVerticalOffset = -0.012;
-
-    @SerialEntry
-    @AutoGen(category = "appearance", group = "dropShadow")
-    @DoubleSlider(min = 0.0, max = 0.05, step = 0.001)
-    public double dropShadowDepthOffset = 0.002;
-
-    // lighting
-    @MasterTickBox(value = {"lightingTintStrength"})
-    @SerialEntry
-    @AutoGen(category = "appearance", group = "lighting")
-    public boolean enableWorldLightingTint = false;
-
-    @SerialEntry
-    @AutoGen(category = "appearance", group = "lighting")
-    @DoubleSlider(min = 0.0, max = 120.0, step = 1.0)
-    public double lightingTintStrength = 50.0;
-
-    // firstPersonHands
-    @MasterTickBox(value = {"hideShieldInFirstPerson"}, invert = true)
-    @SerialEntry
-    @AutoGen(category = "appearance", group = "firstPersonHands")
-    public boolean hideHandsInFirstPerson = false;
-
-    @SerialEntry
-    @AutoGen(category = "appearance", group = "firstPersonHands")
-    @TickBox
-    public boolean hideShieldInFirstPerson = true;
-
-    @MasterTickBox(value = {"handPokeAnimation"}, invert = true)
-    @SerialEntry
-    @AutoGen(category = "appearance", group = "firstPersonHands")
-    public boolean armSwing = false;
-
-    @MasterTickBox(value = {"handPokeStrength", "handPokeDurationMs"})
-    @SerialEntry
-    @AutoGen(category = "appearance", group = "firstPersonHands")
-    public boolean handPokeAnimation = false;
-
-    @SerialEntry
-    @AutoGen(category = "appearance", group = "firstPersonHands")
-    @DoubleSlider(min = 0.25, max = 2.5, step = 0.05)
-    public double handPokeStrength = 1.0;
-
-    @SerialEntry
-    @AutoGen(category = "appearance", group = "firstPersonHands")
-    @IntSlider(min = 50, max = 500, step = 10)
-    public int handPokeDurationMs = 150;
-
     // texture
     @SerialEntry
     @AutoGen(category = "appearance", group = "texture")
@@ -305,6 +227,84 @@ public class SpatialGUIConfig {
     @AutoGen(category = "appearance", group = "texture")
     @TickBox
     public boolean useAnisotropicFiltering = true;
+
+    // firstPersonHands
+    @MasterTickBox(value = {"hideShieldInFirstPerson"}, invert = true)
+    @SerialEntry
+    @AutoGen(category = "appearance", group = "firstPersonHands")
+    public boolean hideHandsInFirstPerson = false;
+
+    @SerialEntry
+    @AutoGen(category = "appearance", group = "firstPersonHands")
+    @TickBox
+    public boolean hideShieldInFirstPerson = true;
+
+    @MasterTickBox(value = {"handPokeAnimation"}, invert = true)
+    @SerialEntry
+    @AutoGen(category = "appearance", group = "firstPersonHands")
+    public boolean armSwing = false;
+
+    @MasterTickBox(value = {"handPokeStrength", "handPokeDurationMs"})
+    @SerialEntry
+    @AutoGen(category = "appearance", group = "firstPersonHands")
+    public boolean handPokeAnimation = false;
+
+    @SerialEntry
+    @AutoGen(category = "appearance", group = "firstPersonHands")
+    @DoubleSlider(min = 0.25, max = 2.5, step = 0.05)
+    public double handPokeStrength = 1.0;
+
+    @SerialEntry
+    @AutoGen(category = "appearance", group = "firstPersonHands")
+    @IntSlider(min = 50, max = 500, step = 10)
+    public int handPokeDurationMs = 150;
+
+    // dropShadow
+    @MasterTickBox(value = {"dropShadowSoftness", "dropShadowAlpha", "dropShadowScaleMultiplier", "dropShadowHorizontalOffset", "dropShadowVerticalOffset", "dropShadowDepthOffset"})
+    @SerialEntry
+    @AutoGen(category = "appearance", group = "dropShadow")
+    public boolean dropShadowEnabled = true;
+
+    @SerialEntry
+    @AutoGen(category = "appearance", group = "dropShadow")
+    @DoubleSlider(min = 0.0, max = 0.05, step = 0.001)
+    public double dropShadowSoftness = 0.0;
+
+    @SerialEntry
+    @AutoGen(category = "appearance", group = "dropShadow")
+    @IntSlider(min = 0, max = 255, step = 1)
+    public int dropShadowAlpha = 120;
+
+    @SerialEntry
+    @AutoGen(category = "appearance", group = "dropShadow")
+    @DoubleSlider(min = 0.8, max = 1.2, step = 0.01)
+    public double dropShadowScaleMultiplier = 1.0;
+
+    @SerialEntry
+    @AutoGen(category = "appearance", group = "dropShadow")
+    @DoubleSlider(min = -0.05, max = 0.05, step = 0.001)
+    public double dropShadowHorizontalOffset = 0.008;
+
+    @SerialEntry
+    @AutoGen(category = "appearance", group = "dropShadow")
+    @DoubleSlider(min = -0.05, max = 0.05, step = 0.001)
+    public double dropShadowVerticalOffset = -0.012;
+
+    @SerialEntry
+    @AutoGen(category = "appearance", group = "dropShadow")
+    @DoubleSlider(min = 0.0, max = 0.05, step = 0.001)
+    public double dropShadowDepthOffset = 0.002;
+
+    // lighting
+    @MasterTickBox(value = {"lightingTintStrength"})
+    @SerialEntry
+    @AutoGen(category = "appearance", group = "lighting")
+    public boolean enableWorldLightingTint = false;
+
+    @SerialEntry
+    @AutoGen(category = "appearance", group = "lighting")
+    @DoubleSlider(min = 0.0, max = 120.0, step = 1.0)
+    public double lightingTintStrength = 50.0;
 
     // ===========
     // thirdPerson
