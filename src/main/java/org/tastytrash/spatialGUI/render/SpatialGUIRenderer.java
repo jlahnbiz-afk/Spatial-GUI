@@ -514,6 +514,7 @@ public class SpatialGUIRenderer {
         long now = System.nanoTime();
         float dt = lastFovUpdateNano == 0L ? 0f : Math.min((now - lastFovUpdateNano) / 1000000000f, 0.1f);
         lastFovUpdateNano = now;
+        if (fovProgress == target) return;
 
         float alpha = 1f - (float) Math.exp(-dt * speed);
         fovProgress += (target - fovProgress) * alpha;
