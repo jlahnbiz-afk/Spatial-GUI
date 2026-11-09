@@ -27,7 +27,7 @@ public abstract class OptionsMixin {
             SpatialGUIClient.setOriginalCameraType(this.cameraType);
             Screen hooked = renderer.getHookedScreen();
             boolean editorOverride = hooked instanceof EditorScreen && EditorMode.viewOverride() != null;
-            if (ConfigManager.config().autoDetectCameraMode && !editorOverride) {
+            if (ConfigManager.config().autoDetectCameraMode && !editorOverride && !SpatialGUIClient.getSwitchedToFirstPersonDueToBlock()) {
                 return;
             }
             boolean isFirstPerson = SpatialGUIClient.shouldUseFirstPersonMode(hooked);

@@ -29,7 +29,7 @@ import net.minecraft.client.renderer.state.level.CameraRenderState;
 /*import net.minecraft.client.renderer.state.CameraRenderState;
  *///?}
 
-@Mixin(EntityRenderDispatcher.class)
+@Mixin(value = EntityRenderDispatcher.class, priority = 500)
 public class EntityRenderDispatcherMixin {
     //? if 1.21.11 {
     /*@Unique

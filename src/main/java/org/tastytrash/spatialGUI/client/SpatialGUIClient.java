@@ -259,7 +259,7 @@ public class SpatialGUIClient {
         }
         if (ConfigManager.config().autoDetectCameraMode) {
             var client = Minecraft.getInstance();
-            return client.options.getCameraType() == net.minecraft.client.CameraType.FIRST_PERSON;
+            return switchedToFirstPersonDueToBlock || client.options.getCameraType() == net.minecraft.client.CameraType.FIRST_PERSON;
         } else {
             return ConfigManager.config().viewMode == SpatialGUIConfig.ViewMode.FIRST_PERSON
                 || switchedToFirstPersonDueToBlock;
