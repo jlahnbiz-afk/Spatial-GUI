@@ -53,7 +53,6 @@ public class WindowMixin {
     private static boolean shouldOverride() {
         if (!SpatialGUIClient.isEnabled()) return false;
         if (GuiScaleUtil.pendingScreen != null || GuiScaleUtil.pendingOverride) return true;
-        if (SpatialGUIRenderer.skipWindowOverride && !EssentialCompat.isEssentialCaller()) return false;
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return false;
         if (mc.gui == null) return false;
@@ -62,6 +61,9 @@ public class WindowMixin {
         *///?} else {
         Screen screen = mc.screen;
         //?}
+        if (screen == null && SpatialGUIAPI.getCurrentScreen() == null) return false;
+        if (SpatialGUIRenderer.skipWindowOverride
+                && (!EssentialCompat.isIntegrationAvailable() || !EssentialCompat.isEssentialCaller())) return false;
         if (SpatialGUIClient.shouldHookScreen(screen)) return true;
         return SpatialGUIClient.shouldHookScreen(SpatialGUIAPI.getCurrentScreen());
     }
