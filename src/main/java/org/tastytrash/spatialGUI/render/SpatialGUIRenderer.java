@@ -69,6 +69,10 @@ public class SpatialGUIRenderer {
     private boolean rotationAnchored;
     private float anchoredYaw;
     private float anchoredPitch;
+    //? if fabric {
+    private Object registeredExtractEvent;
+    private Object registeredRemoveEvent;
+    //?}
 
     public SpatialGUIRenderer() {
         this.screenTexture = new ScreenTexture();
@@ -86,7 +90,13 @@ public class SpatialGUIRenderer {
     }
 
     public void hookScreen(Screen screen) {
-        if (hookedScreen == screen) return;
+        if (hookedScreen == screen) {
+            // Fabric recreates per-screen event objects on resize/reinitialization.
+            //? if fabric {
+            if (screen != null) registerScreenEvents(screen);
+            //?}
+            return;
+        }
         if (!SpatialGUIClient.isEnabled()) return;
         //? if >=26.2 {
         /*if (screen != Minecraft.getInstance().gui.screen()) return;
@@ -152,29 +162,40 @@ public class SpatialGUIRenderer {
             screenTexture.prepareTarget();
         }
 
-        //? if fabric && >=26.4 {
-        /*ScreenEvents.afterExtract(screen).register((screenArg, extractor) -> prepareTarget());
-        *///?} else if fabric && >=26.1.2 {
-        ScreenEvents.afterExtract(screen).register((screenArg, extractor, mouseX, mouseY, tickDelta) -> prepareTarget());
-        //?} else if fabric {
-        /*ScreenEvents.afterRender(screen).register((screenArg, graphics, mouseX, mouseY, tickDelta) -> prepareTarget());
-         *///?}
-
-        //? if fabric && 1.20.1 {
-        /*var afterRenderEvent = ScreenEvents.afterRender(screen);
-        var lateFlushPhase = new net.minecraft.resources.ResourceLocation("spatial_gui", "late_flush");
-        afterRenderEvent.addPhaseOrdering(net.fabricmc.fabric.api.event.Event.DEFAULT_PHASE, lateFlushPhase);
-        afterRenderEvent.register(lateFlushPhase, (screenArg, graphics, mouseX, mouseY, tickDelta) -> graphics.flush());
-        *///?}
-
         //? if fabric {
-        ScreenEvents.remove(screen).register(removedScreen -> {
-            if (hookedScreen == removedScreen) {
-                onScreenRemoved();
-            }
-        });
+        registerScreenEvents(screen);
         //?}
     }
+
+    //? if fabric {
+    private void registerScreenEvents(Screen screen) {
+        //? if >=26.1.2 {
+        var extractEvent = ScreenEvents.afterExtract(screen);
+        //?} else {
+        /*var extractEvent = ScreenEvents.afterRender(screen);
+        *///?}
+        if (registeredExtractEvent != extractEvent) {
+            //? if >=26.4 {
+            /*extractEvent.register((screenArg, extractor) -> prepareTarget());
+            *///?} else {
+            extractEvent.register((screenArg, graphics, mouseX, mouseY, tickDelta) -> prepareTarget());
+            //?}
+            //? if 1.20.1 {
+            /*var lateFlushPhase = new net.minecraft.resources.ResourceLocation("spatial_gui", "late_flush");
+            extractEvent.addPhaseOrdering(net.fabricmc.fabric.api.event.Event.DEFAULT_PHASE, lateFlushPhase);
+            extractEvent.register(lateFlushPhase, (screenArg, graphics, mouseX, mouseY, tickDelta) -> graphics.flush());
+            *///?}
+            registeredExtractEvent = extractEvent;
+        }
+        var removeEvent = ScreenEvents.remove(screen);
+        if (registeredRemoveEvent != removeEvent) {
+            removeEvent.register(removedScreen -> {
+                if (hookedScreen == removedScreen) onScreenRemoved();
+            });
+            registeredRemoveEvent = removeEvent;
+        }
+    }
+    //?}
 
     //? if neoforge || forge {
     /*private void onScreenRenderPre(ScreenEvent.Render.Pre event) {
@@ -207,6 +228,10 @@ public class SpatialGUIRenderer {
 
     private void onScreenRemoved(boolean animate) {
         if (hookedScreen == null) return;
+        //? if fabric {
+        registeredExtractEvent = null;
+        registeredRemoveEvent = null;
+        //?}
         skipWindowOverride = false;
         EditorMode.resetMouseFree();
         var player = Minecraft.getInstance().player;
