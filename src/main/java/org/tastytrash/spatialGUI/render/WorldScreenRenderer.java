@@ -252,13 +252,17 @@ public class WorldScreenRenderer {
         int taps = !config.dropShadowEnabled ? 0 : softness > 0 ? SHADOW_TAPS : 1;
         int tapAlpha = taps <= 1 ? config.dropShadowAlpha : Math.round(255 * (1 - (float) Math.pow(1 - Math.min(config.dropShadowAlpha / 255.0F, 0.92F), 1.0 / taps)));
 
+        // One local matrix per invocation keeps nested/reentrant emission independent.
+        Matrix4f tapPose = null;
         for (int i = 0; i < taps; i++) {
             float angle = i * 2.4F;
             float radius = softness * (float) Math.sqrt((i + 0.5F) / taps);
             float offsetX = (float) config.dropShadowHorizontalOffset + radius * (float) Math.cos(angle);
             float offsetY = (float) config.dropShadowVerticalOffset + radius * (float) Math.sin(angle);
             float scale = (float) config.dropShadowScaleMultiplier;
-            Matrix4f tapPose = new Matrix4f(pose).translate(offsetX, offsetY, (float) -config.dropShadowDepthOffset).scale(scale, scale, scale);
+            if (tapPose == null) tapPose = new Matrix4f(pose);
+            else tapPose.set(pose);
+            tapPose.translate(offsetX, offsetY, (float) -config.dropShadowDepthOffset).scale(scale, scale, scale);
             if (curved) {
                 RenderUtil.addCurvedScreenQuad(buffer, tapPose, aspect, arcRadians, CURVED_SEGMENTS, 0, tapAlpha);
             } else {
