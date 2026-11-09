@@ -14,6 +14,7 @@ import org.tastytrash.spatialGUI.mixin.accessor.GameRendererInvoker;
 import java.lang.Math;
 
 public final class RenderUtil {
+    private static volatile CurvedPanelGeometry cachedCurvedGeometry;
     private RenderUtil() {}
 
     public record QuadBasis(Vector3f centerOffset, Vector3f right, Vector3f up, Vector3f normal, float halfWidth, float halfHeight) {}
@@ -329,18 +330,22 @@ public final class RenderUtil {
     }
 
     public static void addCurvedScreenQuad(VertexConsumer buffer, Matrix4f pose, float aspect, float arcRadians, int segments, int rgb, int a) {
-        float radius = aspect / arcRadians;
-        float halfArc = arcRadians * 0.5F;
-        float prevX = radius * (float) Math.sin(-halfArc);
-        float prevZ = radius * (1.0F - (float) Math.cos(-halfArc));
-        float prevU = 0.0F;
+        if (segments <= 0) return;
+        CurvedPanelGeometry geometry = cachedCurvedGeometry;
+        if (geometry == null || !geometry.matches(aspect, arcRadians, segments)) {
+            geometry = new CurvedPanelGeometry(aspect, arcRadians, segments);
+            cachedCurvedGeometry = geometry;
+        }
+        boolean flipped = VulkanModCompat.isVulkanModLoaded();
+        float prevX = geometry.x(0);
+        float prevZ = geometry.z(0);
+        float prevU = geometry.u(0);
         for (int i = 1; i <= segments; i++) {
-            float angle = -halfArc + arcRadians * (i / (float) segments);
-            float x = radius * (float) Math.sin(angle);
-            float z = radius * (1.0F - (float) Math.cos(angle));
-            float u = i / (float) segments;
+            float x = geometry.x(i);
+            float z = geometry.z(i);
+            float u = geometry.u(i);
 
-            if (VulkanModCompat.isVulkanModLoaded()) {
+            if (flipped) {
                 addQuadVertex(buffer, pose, prevX, -0.5F, prevZ, prevU, 1.0F, rgb, a);
                 addQuadVertex(buffer, pose, x, -0.5F, z, u, 1.0F, rgb, a);
                 addQuadVertex(buffer, pose, x, 0.5F, z, u, 0.0F, rgb, a);
